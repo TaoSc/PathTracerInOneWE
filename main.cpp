@@ -5,7 +5,7 @@
 
 
 constexpr float MAX_FLOAT = 100.f;
-int max_bounces = 3;
+int max_bounces = 5;
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
@@ -45,7 +45,7 @@ vec3 compute_color(const ray& r, hittable* world, int bounces = 0) {
 int main(int argc, char* argv[]) {
     constexpr int channels = 3;
     std::string filename = "output";
-    int width = 200; int height = 100, samples = 50;
+    int width = 400; int height = 200, samples = 50;
     for (size_t i = 0; i < argc; i++) {
         if (strcmp(argv[i], "-f") == 0)
             filename = argv[i + 1];
@@ -80,10 +80,10 @@ int main(int argc, char* argv[]) {
     vec3 color;
 
     hittable* list[4];
-    list[0] = new sphere(vec3(0, 0, -1), 0.5, new lambertian(vec3(0.8, 0.3, 0.3)));
-    list[1] = new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.8, 0.8, 0.0)));
-    list[2] = new sphere(vec3(1, 0, -1), 0.5, new metal(vec3(0.8, 0.6, 0.2)));
-    list[3] = new sphere(vec3(-1, 0, -1), 0.5, new metal(vec3(0.8, 0.8, 0.8)));
+    list[0] = new sphere(vec3(0.f, 0.f, -1.f), 0.5f, new lambertian(vec3(0.8f, 0.3f, 0.3f)));
+    list[1] = new sphere(vec3(0.f, -100.5f, -1.f), 100.f, new lambertian(vec3(0.8f, 0.8f, 0.0f)));
+    list[2] = new sphere(vec3(1.f, 0.f, -1.f), 0.5f, new metal(vec3(0.8f, 0.6f, 0.2f), 0.f));
+    list[3] = new sphere(vec3(-1.f, 0.f, -1.f), 0.5f, new metal(vec3(0.8f, 0.8f, 0.8f), 0.f));
     hittable* world = new hittable_list(list, 4);
 
     camera cam(aspect_ratio);
