@@ -27,7 +27,7 @@ vec3 compute_color(const ray& r, hittable* world, int bounces = 0) {
     if (world->hit(r, 0.001f, MAX_FLOAT, rec)) {
         ray scattered;
         vec3 attenuation;
-        if (bounces < max_bounces && rec.mat_ptr->scatter(r, rec, attenuation, scattered)) {
+        if (bounces <= max_bounces && rec.mat_ptr->scatter(r, rec, attenuation, scattered)) {
             return attenuation * compute_color(scattered, world, ++bounces);
         } else {
             return vec3();
@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
     int index = 0;
 
     std::cout << "Outputting to \"" << filename << ".png\" (" << width << "x" << height << ") at " << samples << " sppx." << std::endl
-              << max_bounces << " bounces max." << std::endl;
+              << max_bounces << " bounce(s) max." << std::endl;
 
 
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
