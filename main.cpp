@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <chrono>
+#include <string>
 #include <cstdlib>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -27,7 +28,7 @@ vec3 compute_color(const ray& r, hittable* world, int bounces = 0) {
     if (world->hit(r, 0.001f, MAX_FLOAT, rec)) {
         ray scattered;
         vec3 attenuation;
-        if (bounces <= max_bounces && rec.mat_ptr->scatter(r, rec, attenuation, scattered)) {
+        if (bounces < max_bounces && rec.mat_ptr->scatter(r, rec, attenuation, scattered)) {
             return attenuation * compute_color(scattered, world, ++bounces);
         } else {
             return vec3();
@@ -46,6 +47,8 @@ int main(int argc, char* argv[]) {
     constexpr int channels = 3;
     std::string filename = "output";
     int width = 400; int height = 200, samples = 50;
+    float fov = 90.f;
+    vec3 cam_pos(0.f, 0.f, 0.f), look_at(0.f, 0.f, -1.f);
     for (size_t i = 0; i < argc; i++) {
         if (strcmp(argv[i], "-f") == 0)
             filename = argv[i + 1];
@@ -59,6 +62,14 @@ int main(int argc, char* argv[]) {
             samples = atoi(argv[i + 1]);
         else if (strcmp(argv[i], "-b") == 0)
             max_bounces = atoi(argv[i + 1]);
+
+        else if (strcmp(argv[i], "-fov") == 0)
+            fov = std::stof(argv[i + 1]);
+
+        else if (strcmp(argv[i], "-cam") == 0)
+            cam_pos = vec3(std::stof(argv[i + 1]), std::stof(argv[i + 2]), std::stof(argv[i + 3]));
+        else if (strcmp(argv[i], "-look") == 0)
+            look_at = vec3(std::stof(argv[i + 1]), std::stof(argv[i + 2]), std::stof(argv[i + 3]));
     }
 
     unsigned char* data = static_cast<unsigned char*>(malloc(static_cast<size_t>(width) * static_cast<size_t>(height) * static_cast<size_t>(channels)));
@@ -86,7 +97,7 @@ int main(int argc, char* argv[]) {
     list[3] = new sphere(vec3(-1, 0, -1), 0.5, new metal(vec3(0.5, 0.3, 0.8), 1.0));
     hittable* world = new hittable_list(list, 4);
 
-    camera cam(aspect_ratio);
+    camera cam(cam_pos, look_at, vec3(0.f, 1.f, 0.f), fov, aspect_ratio);
 
     for (size_t y = height; y > 0; y--) {
         for (size_t x = 0; x < width; x++) {
