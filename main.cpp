@@ -3,10 +3,6 @@
 #include <chrono>
 #include <cstdlib>
 
-
-constexpr float MAX_FLOAT = 100.f;
-int max_bounces = 5;
-
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
@@ -18,6 +14,10 @@ int max_bounces = 5;
 #include "sphere.h"
 #include "camera.h"
 #include "material.h"
+
+
+constexpr float MAX_FLOAT = 100.f;
+int max_bounces = 5;
 
 
 vec3 compute_color(const ray& r, hittable* world, int bounces = 0) {
@@ -34,7 +34,7 @@ vec3 compute_color(const ray& r, hittable* world, int bounces = 0) {
         }
     }
     // sky
-    else { 
+    else {
         vec3 unit_direction = unit_vector(r.direction());
         float t = 0.5f * (unit_direction.y() + 1.0f);
         return (1.0f - t) * vec3(1.0f, 1.0f, 1.0f) + // white contribution
@@ -80,10 +80,10 @@ int main(int argc, char* argv[]) {
     vec3 color;
 
     hittable* list[4];
-    list[0] = new sphere(vec3(0.f, 0.f, -1.f), 0.5f, new lambertian(vec3(0.8f, 0.3f, 0.3f)));
-    list[1] = new sphere(vec3(0.f, -100.5f, -1.f), 100.f, new lambertian(vec3(0.8f, 0.8f, 0.0f)));
-    list[2] = new sphere(vec3(1.f, 0.f, -1.f), 0.5f, new metal(vec3(0.8f, 0.6f, 0.2f), 0.f));
-    list[3] = new sphere(vec3(-1.f, 0.f, -1.f), 0.5f, new metal(vec3(0.8f, 0.8f, 0.8f), 0.f));
+    list[0] = new sphere(vec3(0, 0, -1), 0.5, new lambertian(vec3(0.1, 0.2, 0.5)));
+    list[1] = new sphere(vec3(0, -100.5, -1), 100, new lambertian(vec3(0.8, 0.8, 0.0)));
+    list[2] = new sphere(vec3(1, 0, -1), 0.5, new metal(vec3(0.8, 0.6, 0.2), 0.0));
+    list[3] = new sphere(vec3(-1, 0, -1), 0.5, new metal(vec3(0.5, 0.3, 0.8), 1.0));
     hittable* world = new hittable_list(list, 4);
 
     camera cam(aspect_ratio);
@@ -95,7 +95,7 @@ int main(int argc, char* argv[]) {
                 u = float(x + random_double()) / float(width);
                 v = float(y + random_double()) / float(height);
                 r = cam.get_ray(u, v);
-                color += compute_color(r, world);
+                color += compute_color(r, world, 0);
             }
             color /= static_cast<float>(samples);
 

@@ -8,7 +8,7 @@ struct hit_record {
     float t = 0.f;
     vec3 point;
     vec3 normal;
-    material* mat_ptr;
+    material* mat_ptr = nullptr;
 };
 
 class hittable {
