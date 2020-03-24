@@ -5,12 +5,13 @@ bool hittable_list::hit(const ray& r, const float& t_min, const float& t_max, hi
     bool hit_anything = false;
     float closest_so_far = t_max;
 
-    for (int i = 0; i < list_size; i++) {
-        if (list[i]->hit(r, t_min, closest_so_far, temp_rec)) {
+    for (const auto& object : objects) {
+        if (object->hit(r, t_min, closest_so_far, temp_rec)) {
             hit_anything = true;
-            closest_so_far = temp_rec.t;
+            closest_so_far = temp_rec.time;
             rec = temp_rec;
         }
     }
+
     return hit_anything;
 }

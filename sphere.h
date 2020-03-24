@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "hittable.h"
 #include "vec3.h"
 #include "ray.h"
@@ -7,11 +9,12 @@
 
 class sphere : public hittable {
 public:
-    sphere() : center(vec3()), radius(1), mat_ptr(new lambertian(vec3(1.f, 1.f, 1.f))) {}
-    sphere(const vec3& cen, const float& r, material* mat) : center(cen), radius(r), mat_ptr(mat) {}
-    virtual bool hit(const ray& r, const float& t_min, const float& t_max, hit_record& rec) const;
+    sphere() : center(vec3()), radius(1) {}
+    sphere(const vec3& cen, double r, std::shared_ptr<material> m) : center(cen), radius(r), mat_ptr(m) {};
+
+    virtual bool hit(const ray& r, const float& t_min, const float& t_max, hit_record& rec) const override;
 
     vec3 center;
-    float radius;
-    material* mat_ptr;
+    double radius;
+    std::shared_ptr<material> mat_ptr;
 };

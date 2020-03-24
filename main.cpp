@@ -3,6 +3,7 @@
 #include <chrono>
 #include <string>
 #include <cstdlib>
+#include <memory>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
@@ -20,8 +21,44 @@
 constexpr float MAX_FLOAT = 100.f;
 int max_bounces = 5;
 
+using std::make_shared;
 
-vec3 compute_color(const ray& r, hittable_list world, int bounces = 0) {
+
+hittable_list random_scene() {
+    hittable_list world;
+
+    world.add(make_shared<sphere>(vec3(0, -1000, 0), 1000, make_shared<lambertian>(vec3(0.5, 0.5, 0.5))));
+
+    for (int a = -11; a < 11; a++) {
+        for (int b = -11; b < 11; b++) {
+            auto choose_mat = random_double();
+            vec3 center(a + 0.9 * random_double(), 0.2, b + 0.9 * random_double());
+            if ((center - vec3(4, 0.2, 0)).length() > 0.9) {
+                if (choose_mat < 0.8) { // diffuse
+                    auto albedo = vec3(random_double(), random_double(), random_double()) * vec3(random_double(), random_double(), random_double());
+                    world.add(make_shared<sphere>(center, 0.2, make_shared<lambertian>(albedo)));
+                }
+                else if (choose_mat < 0.95) { // metal
+                    auto albedo = vec3(random_double(0.5, 1), random_double(0.5, 1), random_double(0.5, 1));
+                    auto fuzz = random_double(0, .5);
+                    world.add(make_shared<sphere>(center, 0.2, make_shared<metal>(albedo, fuzz)));
+                }
+                else { // glass
+                    world.add(make_shared<sphere>(center, 0.2, make_shared<dielectric>(1.5)));
+                }
+            }
+        }
+    }
+
+    world.add(make_shared<sphere>(vec3(0, 1, 0), 1.0, make_shared<dielectric>(1.5)));
+    world.add(make_shared<sphere>(vec3(-4, 1, 0), 1.0, make_shared<lambertian>(vec3(0.4, 0.2, 0.1))));
+    world.add(make_shared<sphere>(vec3(4, 1, 0), 1.0, make_shared<metal>(vec3(0.7, 0.6, 0.5), 0.0)));
+
+    return world;
+}
+
+
+vec3 compute_color(const ray& r, const hittable_list& world, int bounces = 0) {
     hit_record rec;
 
     // hit an object
@@ -37,18 +74,18 @@ vec3 compute_color(const ray& r, hittable_list world, int bounces = 0) {
     // sky
     else {
         vec3 unit_direction = unit_vector(r.direction());
-        float t = 0.5f * (unit_direction.y() + 1.0f);
-        return (1.0f - t) * vec3(1.0f, 1.0f, 1.0f) + // white contribution
-            t * vec3(0.5f, 0.7f, 1.0f); // blue contribution
+        double t = 0.5 * (unit_direction.y() + 1.0f);
+        return (1.0 - t) * vec3(1.0, 1.0, 1.0) + // white contribution
+                        t * vec3(0.5, 0.7, 1.0);  // blue contribution
     }
 }
 
 int main(int argc, char* argv[]) {
     constexpr int channels = 3;
     std::string filename = "output";
-    int width = 400; int height = 200, samples = 50;
-    float fov = 40.f, aperture = 0.0f, focus_dist = 0.f;
-    vec3 cam_pos(0.f, 0.f, 1.5f), look_at(0.f, 0.f, -1.f);
+    int width = 400; int height = 200, samples = 20;
+    double fov = 20, aperture = 0.1, focus_dist = 10;
+    vec3 cam_pos(13, 2, 3), look_at(0, 0, 0);
     for (size_t i = 0; i < argc; i++) {
         if (strcmp(argv[i], "-f") == 0)
             filename = argv[i + 1];
@@ -95,16 +132,11 @@ int main(int argc, char* argv[]) {
     ray r;
     vec3 color;
 
-    hittable* list[4];
-    list[0] = new sphere(vec3(0.f, -100.5f, -1.f), 100, new lambertian(vec3(0.8f, 0.8f, 0.0f)));
-    list[1] = new sphere(vec3(0.f, 0.f, -1.f), 0.5f, new lambertian(vec3(0.1f, 0.2f, 0.5f)));
-    list[2] = new sphere(vec3(1.f, 0.f, -1.f), 0.5f, new metal(vec3(0.8f, 0.6f, 0.2f), 0.0f));
-    list[3] = new sphere(vec3(-1, 0, -1), 0.5, new metal(vec3(0.5, 0.3, 0.8), 1.0));
-    hittable_list world(list, 4);
-
     if (!focus_dist)
         focus_dist = (cam_pos - look_at).length();
-    camera cam(cam_pos, look_at, vec3(0.f, 1.f, 0.f), fov, aspect_ratio, aperture, focus_dist);
+    camera cam(cam_pos, look_at, vec3(0., 1., 0.), fov, aspect_ratio, aperture, focus_dist);
+    auto world = random_scene();
+
 
     for (size_t y = height; y > 0; y--) {
         for (size_t x = 0; x < width; x++) {
@@ -116,7 +148,6 @@ int main(int argc, char* argv[]) {
                 color += compute_color(r, world, 0);
             }
             color /= static_cast<float>(samples);
-
 
             data[index++] = static_cast<unsigned char>(255.99f * sqrt(color[0]));
             data[index++] = static_cast<unsigned char>(255.99f * sqrt(color[1]));

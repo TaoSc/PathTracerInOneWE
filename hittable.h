@@ -1,14 +1,22 @@
 #pragma once
 
+#include <memory>
+
 #include "ray.h"
 
 class material;
 
 struct hit_record {
-    float t = 0.f;
+    float time = 0.f;
     vec3 point;
     vec3 normal;
-    material* mat_ptr = nullptr;
+    std::shared_ptr<material> mat_ptr;
+    bool front_face = false;
+
+    inline void set_face_normal(const ray& r, const vec3& outward_normal) {
+        front_face = dot(r.direction(), outward_normal) < 0;
+        normal = front_face ? outward_normal : -outward_normal;
+    }
 };
 
 class hittable {

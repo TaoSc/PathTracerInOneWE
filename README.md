@@ -30,7 +30,7 @@ PathTracerInOneWE.exe [-f **filename** -w **width** -h **height** -s **samples p
 
 Example command line and resulting output:
 ```
-PathTracerInOneWE.exe -w 1280 -h 720 -s 100 -b 50 -fov 40 -cam -2 2 1 -look 0 0 -1
+PathTracerInOneWE.exe -s 5 -b 50 -fov 50 -cam -2 2 -3 -look 0 0 -1 -w 1280 -h 720
 ```
 ![Example Output](https://github.com/TaoSc/PathTracerInOneWE/raw/master/example.png)
 
