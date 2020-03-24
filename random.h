@@ -15,3 +15,11 @@ inline vec3 random_in_unit_sphere() {
     } while (point.squared_length() >= 1.0f);
     return point;
 }
+
+inline vec3 random_in_unit_disk() {
+    vec3 point;
+    do {
+        point = 2.0f * vec3(float(random_double()), float(random_double()), 0.f) - vec3(1.f, 1.f, 0.f);
+    } while (point.squared_length() >= 1.0f);
+    return point;
+}

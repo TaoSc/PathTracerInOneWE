@@ -12,7 +12,7 @@ Doesn't have any dependency and uses standard C++ code only, should easily compi
 ## Usage and command line options
 
 ```
-PathTracerInOneWE.exe [-f **filename** -w **width** -h **height** -s **samples per pixel** -b **max ray bounces** -fov **field of view** -cam **camera position** -look **camera look at position**]
+PathTracerInOneWE.exe [-f **filename** -w **width** -h **height** -s **samples per pixel** -b **max ray bounces** -fov **field of view** -cam **camera position** -look **camera look at position** -a **aperture** -focus **focus distance**]
 ```
 
 #### Command line Options
@@ -24,7 +24,9 @@ PathTracerInOneWE.exe [-f **filename** -w **width** -h **height** -s **samples p
 - **max ray bounces** *(-b)*: Number of bounces till ray is aborted. 1 bounce corresponds to direct lightning only. Default value: 5
 - **field of view** *(-fov)*: A float value for the camera field of view. Default value: 90
 - **camera position** *(-cam)*: Three consecutive floats for the camera position. Default value: 0 0 0
-- **camera look at position** *(-look)*: Three consecutive floats for the point the camera is pointing to. Default value: 0 0 -1
+- **camera look at position** *(-look)*: Three consecutive floats for the point the camera is pointing at. Default value: 0 0 -1
+- **aperture** *(-a)*: The aperture size of the lens (float). Default value: 0
+- **focus distance** *(-focus)*: Any object at this distance will be in focus (float). If set to 0 will equal the distance between the camera and the look at point. Default value: 0
 
 Example command line and resulting output:
 ```
