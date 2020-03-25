@@ -30,11 +30,11 @@ PathTracerInOneWE.exe [-f **filename** -w **width** -h **height** -s **samples p
 
 Example command line and resulting output:
 ```
-PathTracerInOneWE.exe -s 5 -b 50 -fov 50 -cam -2 2 -3 -look 0 0 -1 -w 1280 -h 720
+PathTracerInOneWE.exe -s 30 -b 50 -fov 50 -cam -2 2 -3 -look 0 0 -1 -w 1280 -h 720
 ```
 ![Example Output](https://github.com/TaoSc/PathTracerInOneWE/raw/master/example.png)
 
-*Rendering time: 43s (Core i5-4440@3.30 GHz)*
+*Rendering time: 73s (Core i5-4440@3.30 GHz)*
 
 ## References
 My project uses stb_image_write.h to save the result image to png: 
