@@ -5,6 +5,14 @@
 #include "utility.h"
 #include "vec3.h"
 
+inline int random_int() {
+    return rand();
+}
+
+inline int random_int(int min, int max) {
+    return (random_int() % (max + 1 - min)) + min;
+}
+
 inline double random_double() {
     return rand() / (RAND_MAX + 1.0);
 }
@@ -30,8 +38,8 @@ inline vec3 random_in_unit_disk() {
 }
 
 inline vec3 random_unit_vector() {
-    auto a = random_double(0, 2. * PI);
-    auto z = random_double(-1, 1);
-    auto r = sqrt(1 - z * z);
+    double a = random_double(0, 2. * PI);
+    double z = random_double(-1, 1);
+    double r = sqrt(1 - z * z);
     return vec3(r * cos(a), r * sin(a), z);
 }

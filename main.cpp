@@ -17,6 +17,7 @@
 #include "camera.h"
 #include "material.h"
 #include "moving_sphere.h"
+#include "bvh_node.h"
 
 
 constexpr float MAX_FLOAT = 100.f;
@@ -25,7 +26,7 @@ int max_bounces = 5;
 using std::make_shared;
 
 
-hittable_list random_scene() {
+bvh_node random_scene() {
     hittable_list world;
 
     world.add(make_shared<sphere>(vec3(0, -1000, 0), 1000, make_shared<lambertian>(vec3(0.5, 0.5, 0.5))));
@@ -60,11 +61,11 @@ hittable_list random_scene() {
     world.add(make_shared<sphere>(vec3(-4, 1, 0), 1.0, make_shared<lambertian>(vec3(0.4, 0.2, 0.1))));
     world.add(make_shared<sphere>(vec3(4, 1, 0), 1.0, make_shared<metal>(vec3(0.7, 0.6, 0.5), 0.0)));
 
-    return world;
+    return bvh_node(world, 0, 1);
 }
 
 
-vec3 compute_color(const ray& r, const hittable_list& world, int bounces = 0) {
+vec3 compute_color(const ray& r, const hittable& world, int bounces = 0) {
     hit_record rec;
 
     // hit an object

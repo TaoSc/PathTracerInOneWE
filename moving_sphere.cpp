@@ -34,3 +34,14 @@ bool moving_sphere::hit(const ray& r, const float& t_min, const float& t_max, hi
 vec3 moving_sphere::center(const double& time) const {
     return center0 + ((time - time0) / (time1 - time0)) * (center1 - center0);
 }
+
+bool moving_sphere::bounding_box(const double& time0, const double& time1, aabb& output_box) const {
+    aabb box0(
+        center(time0) - vec3(radius, radius, radius),
+        center(time0) + vec3(radius, radius, radius));
+    aabb box1(
+        center(time1) - vec3(radius, radius, radius),
+        center(time1) + vec3(radius, radius, radius));
+    output_box = surrounding_box(box0, box1);
+    return true;
+}

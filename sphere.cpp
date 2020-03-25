@@ -30,3 +30,10 @@ bool sphere::hit(const ray& r, const float& t_min, const float& t_max, hit_recor
     }
     return false;
 }
+
+bool sphere::bounding_box(const double& time0, const double& time1, aabb& output_box) const {
+    output_box = aabb(
+        center - vec3(radius, radius, radius),
+        center + vec3(radius, radius, radius));
+    return true;
+}

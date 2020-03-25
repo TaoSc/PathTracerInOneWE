@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "ray.h"
+#include "aabb.h"
 
 class material;
 
@@ -22,4 +23,5 @@ struct hit_record {
 class hittable {
 public:
     virtual bool hit(const ray& r, const float& t_min, const float& t_max, hit_record& rec) const = 0;
+    virtual bool bounding_box(const double& time0, const double& time1, aabb& output_box) const = 0;
 };

@@ -138,6 +138,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="bvh_node.cpp" />
     <ClCompile Include="hittable_list.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="material.cpp" />
@@ -145,6 +146,8 @@
     <ClCompile Include="sphere.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="aabb.h" />
+    <ClInclude Include="bvh_node.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="hittable.h" />
     <ClInclude Include="hittable_list.h" />
