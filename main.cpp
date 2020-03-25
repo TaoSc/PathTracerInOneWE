@@ -154,10 +154,7 @@ int main(int argc, char* argv[]) {
                 color += compute_color(r, world, 0);
             }
             color /= static_cast<float>(samples);
-
-            data[index++] = static_cast<unsigned char>(255.99f * sqrt(color[0]));
-            data[index++] = static_cast<unsigned char>(255.99f * sqrt(color[1]));
-            data[index++] = static_cast<unsigned char>(255.99f * sqrt(color[2]));
+            color.output(data, &index);
         }
     }
 

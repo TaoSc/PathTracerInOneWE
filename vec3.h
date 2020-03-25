@@ -42,6 +42,12 @@ public:
         return e[0] * e[0] + e[1] * e[1] + e[2] * e[2]; // dot squared
     }
 
+    void output(unsigned char* data, int* index) {
+        data[(*index)++] = static_cast<unsigned char>(255.99f * sqrt(e[0]));
+        data[(*index)++] = static_cast<unsigned char>(255.99f * sqrt(e[1]));
+        data[(*index)++] = static_cast<unsigned char>(255.99f * sqrt(e[2]));
+    }
+
     double e[3];
 };
 
