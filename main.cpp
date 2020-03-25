@@ -16,6 +16,7 @@
 #include "sphere.h"
 #include "camera.h"
 #include "material.h"
+#include "moving_sphere.h"
 
 
 constexpr float MAX_FLOAT = 100.f;
@@ -36,7 +37,12 @@ hittable_list random_scene() {
             if ((center - vec3(4, 0.2, 0)).length() > 0.9) {
                 if (choose_mat < 0.8) { // diffuse
                     auto albedo = vec3(random_double(), random_double(), random_double()) * vec3(random_double(), random_double(), random_double());
-                    world.add(make_shared<sphere>(center, 0.2, make_shared<lambertian>(albedo)));
+
+                    if (random_double() > 0.5) {
+                        world.add(make_shared<sphere>(center, 0.2, make_shared<lambertian>(albedo)));
+                    } else {
+                        world.add(make_shared<moving_sphere>(center, center + vec3(0, random_double(0, .5), 0), 0.0, 1.0, 0.2, make_shared<lambertian>(albedo)));
+                    }
                 }
                 else if (choose_mat < 0.95) { // metal
                     auto albedo = vec3(random_double(0.5, 1), random_double(0.5, 1), random_double(0.5, 1));
@@ -134,7 +140,7 @@ int main(int argc, char* argv[]) {
 
     if (!focus_dist)
         focus_dist = (cam_pos - look_at).length();
-    camera cam(cam_pos, look_at, vec3(0., 1., 0.), fov, aspect_ratio, aperture, focus_dist);
+    camera cam(cam_pos, look_at, vec3(0., 1., 0.), fov, aspect_ratio, aperture, focus_dist, 0, 1);
     auto world = random_scene();
 
 
