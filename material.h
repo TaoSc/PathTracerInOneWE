@@ -1,10 +1,13 @@
 #pragma once
 
 #include <algorithm>
+#include <memory>
 
 #include "ray.h"
 #include "hittable.h"
 #include "random.h"
+#include "vec3.h"
+#include "texture.h"
 
 vec3 reflect(const vec3& incident, const vec3& normal);
 vec3 refract(const vec3& incident, const vec3& normal, double etai_over_etat);
@@ -17,30 +20,30 @@ public:
 
 class lambertian : public material {
 public:
-    lambertian(const vec3& a) : albedo(a) {}
+    lambertian(std::shared_ptr<texture> a) : albedo(a) {}
 
     virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& attenuation, ray& scattered) const override {
         vec3 scatter_direction = rec.normal + random_unit_vector();
         scattered = ray(rec.point, scatter_direction, r_in.time());
-        attenuation = albedo;
+        attenuation = albedo->value(0, 0, rec.point);
         return true;
     }
 
-    vec3 albedo;
+    std::shared_ptr<texture> albedo;
 };
 
 class metal : public material {
 public:
-    metal(const vec3& a, double f) : albedo(a), fuzz(f < 1 ? f : 1) {}
+    metal(std::shared_ptr<texture> a, double f) : albedo(a), fuzz(f < 1 ? f : 1) {}
 
     virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& attenuation, ray& scattered) const override {
         vec3 reflected = reflect(unit_vector(r_in.direction()), rec.normal);
         scattered = ray(rec.point, reflected + fuzz * random_in_unit_sphere(), r_in.time());
-        attenuation = albedo;
+        attenuation = albedo->value(0, 0, rec.point);
         return (dot(scattered.direction(), rec.normal) > 0);
     }
 
-    vec3 albedo;
+    std::shared_ptr<texture> albedo;
     double fuzz;
 };
 

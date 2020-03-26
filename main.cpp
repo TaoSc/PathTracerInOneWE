@@ -18,6 +18,7 @@
 #include "material.h"
 #include "moving_sphere.h"
 #include "bvh_node.h"
+#include "texture.h"
 
 
 constexpr float MAX_FLOAT = 100.f;
@@ -25,11 +26,24 @@ int max_bounces = 5;
 
 using std::make_shared;
 
+bvh_node two_spheres() {
+    hittable_list objects;
+
+    auto checker = make_shared<checker_texture>(
+        make_shared<const_texture>(vec3(0.2, 0.3, 0.1)),
+        make_shared<const_texture>(vec3(0.9, 0.9, 0.9))
+        );
+
+    objects.add(make_shared<sphere>(vec3(0, -10, 0), 10, make_shared<lambertian>(checker)));
+    objects.add(make_shared<sphere>(vec3(0, 10, 0), 10, make_shared<lambertian>(checker)));
+
+    return  bvh_node(objects, 0, 1);
+}
 
 bvh_node random_scene() {
     hittable_list world;
-
-    world.add(make_shared<sphere>(vec3(0, -1000, 0), 1000, make_shared<lambertian>(vec3(0.5, 0.5, 0.5))));
+    auto checker = make_shared<checker_texture>(make_shared<const_texture>(vec3(0.2, 0.3, 0.1)), make_shared<const_texture>(vec3(0.9, 0.9, 0.9)), 15);
+    world.add(make_shared<sphere>(vec3(0, -1000, 0), 1000, make_shared<lambertian>(checker)));
 
     for (int a = -11; a < 11; a++) {
         for (int b = -11; b < 11; b++) {
@@ -37,7 +51,7 @@ bvh_node random_scene() {
             vec3 center(a + 0.9 * random_double(), 0.2, b + 0.9 * random_double());
             if ((center - vec3(4, 0.2, 0)).length() > 0.9) {
                 if (choose_mat < 0.8) { // diffuse
-                    auto albedo = vec3(random_double(), random_double(), random_double()) * vec3(random_double(), random_double(), random_double());
+                    auto albedo = make_shared<const_texture>(vec3(random_double(), random_double(), random_double()) * vec3(random_double(), random_double(), random_double()));
 
                     if (random_double() > 0.5) {
                         world.add(make_shared<sphere>(center, 0.2, make_shared<lambertian>(albedo)));
@@ -46,7 +60,7 @@ bvh_node random_scene() {
                     }
                 }
                 else if (choose_mat < 0.95) { // metal
-                    auto albedo = vec3(random_double(0.5, 1), random_double(0.5, 1), random_double(0.5, 1));
+                    auto albedo = make_shared<const_texture>(vec3(random_double(0.5, 1), random_double(0.5, 1), random_double(0.5, 1)));
                     auto fuzz = random_double(0, .5);
                     world.add(make_shared<sphere>(center, 0.2, make_shared<metal>(albedo, fuzz)));
                 }
@@ -58,8 +72,8 @@ bvh_node random_scene() {
     }
 
     world.add(make_shared<sphere>(vec3(0, 1, 0), 1.0, make_shared<dielectric>(1.5)));
-    world.add(make_shared<sphere>(vec3(-4, 1, 0), 1.0, make_shared<lambertian>(vec3(0.4, 0.2, 0.1))));
-    world.add(make_shared<sphere>(vec3(4, 1, 0), 1.0, make_shared<metal>(vec3(0.7, 0.6, 0.5), 0.0)));
+    world.add(make_shared<sphere>(vec3(-4, 1, 0), 1.0, make_shared<lambertian>(make_shared<const_texture>(vec3(0.4, 0.2, 0.1)))));
+    world.add(make_shared<sphere>(vec3(4, 1, 0), 1.0, make_shared<metal>(make_shared<const_texture>(vec3(0.7, 0.6, 0.5)), 0.0)));
 
     return bvh_node(world, 0, 1);
 }
@@ -142,15 +156,15 @@ int main(int argc, char* argv[]) {
     if (!focus_dist)
         focus_dist = (cam_pos - look_at).length();
     camera cam(cam_pos, look_at, vec3(0., 1., 0.), fov, aspect_ratio, aperture, focus_dist, 0, 1);
-    auto world = random_scene();
+    auto world = two_spheres();
 
 
-    for (size_t y = height; y > 0; y--) {
+    for (size_t y = 0; y < height; y++) {
         for (size_t x = 0; x < width; x++) {
             color = vec3();
             for (size_t sample_i = 0; sample_i < samples; sample_i++) {
                 u = float(x + random_double()) / float(width);
-                v = float(y + random_double()) / float(height);
+                v = float(height - (y + random_double())) / float(height);
                 r = cam.get_ray(u, v);
                 color += compute_color(r, world, 0);
             }
