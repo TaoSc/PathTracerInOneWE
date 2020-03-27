@@ -9,6 +9,7 @@ class material;
 
 struct hit_record {
     float time = 0.f;
+    double u = 0., v = 0.;
     vec3 point;
     vec3 normal;
     std::shared_ptr<material> mat_ptr;

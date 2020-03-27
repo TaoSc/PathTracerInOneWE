@@ -1,5 +1,7 @@
 #include "moving_sphere.h"
 
+#include "sphere.h"
+
 bool moving_sphere::hit(const ray& r, const float& t_min, const float& t_max, hit_record& rec) const {
     vec3 oc = r.origin() - center(r.time());
     auto a = r.direction().length_squared();
@@ -16,6 +18,7 @@ bool moving_sphere::hit(const ray& r, const float& t_min, const float& t_max, hi
             vec3 outward_normal = (rec.point - center(r.time())) / radius;
             rec.set_face_normal(r, outward_normal);
             rec.mat_ptr = mat_ptr;
+            get_sphere_uv(outward_normal, rec.u, rec.v);
             return true;
         }
         temp = (-half_b + root) / a; // *2 cancelled out
@@ -25,6 +28,7 @@ bool moving_sphere::hit(const ray& r, const float& t_min, const float& t_max, hi
             vec3 outward_normal = (rec.point - center(r.time())) / radius;
             rec.set_face_normal(r, outward_normal);
             rec.mat_ptr = mat_ptr;
+            get_sphere_uv(outward_normal, rec.u, rec.v);
             return true;
         }
     }

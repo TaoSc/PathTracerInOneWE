@@ -16,6 +16,7 @@ bool sphere::hit(const ray& r, const float& t_min, const float& t_max, hit_recor
             vec3 outward_normal = (rec.point - center) / radius;
             rec.set_face_normal(r, outward_normal);
             rec.mat_ptr = mat_ptr;
+            get_sphere_uv(outward_normal, rec.u, rec.v);
             return true;
         }
         temp = (-half_b + root) / a; // *2 cancelled out
@@ -25,6 +26,7 @@ bool sphere::hit(const ray& r, const float& t_min, const float& t_max, hit_recor
             vec3 outward_normal = (rec.point - center) / radius;
             rec.set_face_normal(r, outward_normal);
             rec.mat_ptr = mat_ptr;
+            get_sphere_uv(outward_normal, rec.u, rec.v);
             return true;
         }
     }

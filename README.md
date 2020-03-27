@@ -37,5 +37,5 @@ PathTracerInOneWE.exe -s 30 -b 50 -fov 50 -cam -2 2 -3 -look 0 0 -1 -w 1280 -h 7
 *Rendering time: 73s (Core i5-4440@3.30 GHz)*
 
 ## References
-My project uses stb_image_write.h to save the result image to png: 
+My project uses stb_image_write.h to save the result image to png and stb_image.h to load texture images: 
 [stb](https://github.com/nothings/stb) (Public Domain)

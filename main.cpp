@@ -6,7 +6,9 @@
 #include <memory>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image_write.h"
+#include "stb_image.h"
 
 #include "vec3.h"
 #include "random.h"
@@ -26,23 +28,12 @@ int max_bounces = 5;
 
 using std::make_shared;
 
-bvh_node two_spheres() {
-    hittable_list objects;
-
-    auto checker = make_shared<checker_texture>(
-        make_shared<const_texture>(vec3(0.2, 0.3, 0.1)),
-        make_shared<const_texture>(vec3(0.9, 0.9, 0.9))
-        );
-
-    objects.add(make_shared<sphere>(vec3(0, -10, 0), 10, make_shared<lambertian>(checker)));
-    objects.add(make_shared<sphere>(vec3(0, 10, 0), 10, make_shared<lambertian>(checker)));
-
-    return  bvh_node(objects, 0, 1);
-}
-
 bvh_node random_scene() {
     hittable_list world;
-    auto checker = make_shared<checker_texture>(make_shared<const_texture>(vec3(0.2, 0.3, 0.1)), make_shared<const_texture>(vec3(0.9, 0.9, 0.9)), 15);
+
+    int width, height, channels;
+    auto texture = make_shared<image_texture>(stbi_load("earthmap.jpg", &width, &height, &channels, 0), width, height);
+    auto checker = make_shared<checker_texture>(make_shared<const_texture>(vec3(0.2, 0.3, 0.1)), make_shared<const_texture>(vec3(0.9, 0.9, 0.9)), 300);
     world.add(make_shared<sphere>(vec3(0, -1000, 0), 1000, make_shared<lambertian>(checker)));
 
     for (int a = -11; a < 11; a++) {
@@ -73,7 +64,7 @@ bvh_node random_scene() {
 
     world.add(make_shared<sphere>(vec3(0, 1, 0), 1.0, make_shared<dielectric>(1.5)));
     world.add(make_shared<sphere>(vec3(-4, 1, 0), 1.0, make_shared<lambertian>(make_shared<const_texture>(vec3(0.4, 0.2, 0.1)))));
-    world.add(make_shared<sphere>(vec3(4, 1, 0), 1.0, make_shared<metal>(make_shared<const_texture>(vec3(0.7, 0.6, 0.5)), 0.0)));
+    world.add(make_shared<sphere>(vec3(4, 1, 0), 1.0, make_shared<metal>(texture, 0.3)));
 
     return bvh_node(world, 0, 1);
 }
@@ -138,7 +129,7 @@ int main(int argc, char* argv[]) {
     unsigned char* data = static_cast<unsigned char*>(malloc(static_cast<size_t>(width) * static_cast<size_t>(height) * static_cast<size_t>(channels)));
     if (!data) {
         std::cerr << "Failure to allocate on heap. Aborting." << std::endl;
-        return -1;
+        return EXIT_FAILURE;
     }
     int index = 0;
 
@@ -156,7 +147,7 @@ int main(int argc, char* argv[]) {
     if (!focus_dist)
         focus_dist = (cam_pos - look_at).length();
     camera cam(cam_pos, look_at, vec3(0., 1., 0.), fov, aspect_ratio, aperture, focus_dist, 0, 1);
-    auto world = two_spheres();
+    auto world = random_scene();
 
 
     for (size_t y = 0; y < height; y++) {
@@ -177,4 +168,6 @@ int main(int argc, char* argv[]) {
     std::cout << std::endl << "Elapsed time: " << std::chrono::duration_cast<std::chrono::seconds> (end - begin).count() << "s." << std::endl;
 
     stbi_write_png(filename.append(".png").c_str(), width, height, channels, data, 0);
+
+    return EXIT_SUCCESS;
 }

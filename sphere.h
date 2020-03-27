@@ -7,6 +7,7 @@
 #include "ray.h"
 #include "material.h"
 #include "aabb.h"
+#include "utility.h"
 
 class sphere : public hittable {
 public:
@@ -20,3 +21,10 @@ public:
     double radius;
     std::shared_ptr<material> mat_ptr;
 };
+
+inline void get_sphere_uv(const vec3& p, double& u, double& v) {
+    double phi = atan2(p.z(), p.x());
+    double theta = asin(p.y());
+    u = 1 - (phi + PI) / (2 * PI);
+    v = (theta + PI / 2) / PI;
+}
