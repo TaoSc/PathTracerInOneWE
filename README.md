@@ -12,12 +12,13 @@ Doesn't have any dependency and uses standard C++ code only, so it should easily
 ## Usage and command line options
 
 ```
-PathTracerInOneWE.exe [-f **filename** -w **width** -h **height** -s **samples per pixel** -b **max ray bounces** -fov **field of view** -cam **camera position** -look **camera look at position** -a **aperture** -focus **focus distance**]
+PathTracerInOneWE [-f **filename** -t **threads** -w **width** -h **height** -s **samples per pixel** -b **max ray bounces** -fov **field of view** -cam **camera position** -look **camera look at position** -a **aperture** -focus **focus distance**]
 ```
 
 #### Command line Options
 
 - **filename** *(-f)*: Output filename without file extension (the program will automatically add .png). Default value: "output".
+- **threads** *(-t)*: Numbers of threads on which to run the rendering. If **samples per pixel** < **threads**, processor utilization will not be maximized. If set to 0, will equal the number of physical threads exposed by your machine. Default value: 0
 - **width** *(-w)*: Viewport width in pixels. Default value: 400
 - **height** *(-h)*: Viewport height in pixels. Default value: 200
 - **samples per pixel** *(-s)*: Self-explanatory. Dramatically affects rendering time. Default value: 50
@@ -26,15 +27,15 @@ PathTracerInOneWE.exe [-f **filename** -w **width** -h **height** -s **samples p
 - **camera position** *(-cam)*: Three consecutive floats for the camera position. Default value: 0 0 0
 - **camera look at position** *(-look)*: Three consecutive floats for the point the camera is pointing at. Default value: 0 0 -1
 - **aperture** *(-a)*: The aperture size of the lens (float). Default value: 0
-- **focus distance** *(-focus)*: Any object at this distance will be in focus (float). If set to 0 will equal the distance between the camera and the look at point. Default value: 0
+- **focus distance** *(-focus)*: Any object at this distance will be in focus (float). If set to 0, will equal the distance between the camera and the look at point. Default value: 0
 
 Example command line and resulting output:
 ```
-PathTracerInOneWE.exe -s 30 -b 50 -fov 50 -cam -2 2 -3 -look 0 0 -1 -w 1280 -h 720
+PathTracerInOneWE -s 40 -b 50 -fov 50 -cam -2 2 -3 -look 0 0 -1 -w 1280 -h 720
 ```
 ![Example Output](https://github.com/TaoSc/PathTracerInOneWE/raw/master/example.png)
 
-*Rendering time: 73s (Core i5-4440@3.30 GHz)*
+*Rendering time: 33s (Core i5-4440@3.30 GHz)*
 
 ## References
 My project uses stb_image_write.h to save the result image to png and stb_image.h to load texture images: 

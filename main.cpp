@@ -4,6 +4,7 @@
 #include <string>
 #include <cstdlib>
 #include <memory>
+#include <thread>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
@@ -26,15 +27,16 @@
 
 
 constexpr float MAX_FLOAT = 100.f;
-int max_bounces = 5;
+unsigned int max_bounces = 5, max_samples = 20;
+unsigned int width = 400, height = 200;
 
 using std::make_shared;
 
 bvh_node random_scene() {
     hittable_list world;
 
-    int width, height, channels;
-    auto texture = make_shared<image_texture>(stbi_load("earthmap.jpg", &width, &height, &channels, 0), width, height);
+    int tex_width, tex_height, channels;
+    auto texture = make_shared<image_texture>(stbi_load("earthmap.jpg", &tex_width, &tex_height, &channels, 0), tex_width, tex_height);
     auto checker = make_shared<checker_texture>(make_shared<const_texture>(vec3(0.2, 0.3, 0.1)), make_shared<const_texture>(vec3(0.9, 0.9, 0.9)), 300);
     world.add(make_shared<sphere>(vec3(0, -1000, 0), 1000, make_shared<lambertian>(checker)));
 
@@ -72,7 +74,7 @@ bvh_node random_scene() {
 }
 
 
-vec3 compute_color(const ray& r, const hittable& world, int bounces = 0) {
+vec3 compute_color(const ray& r, const hittable& world, unsigned int bounces = 0) {
     hit_record rec;
 
     // hit an object
@@ -90,19 +92,47 @@ vec3 compute_color(const ray& r, const hittable& world, int bounces = 0) {
         vec3 unit_direction = unit_vector(r.direction());
         double t = 0.5 * (unit_direction.y() + 1.0f);
         return (1.0 - t) * vec3(1.0, 1.0, 1.0) + // white contribution
-                        t * vec3(0.5, 0.7, 1.0);  // blue contribution
+                       t * vec3(0.5, 0.7, 1.0);  // blue contribution
+    }
+}
+
+void shoot_ray(unsigned char* result, const size_t& thread_no, const size_t& samples_per_thread, const camera& cam, const bvh_node& world) {
+    srand(static_cast<unsigned int>(time(nullptr) * (thread_no + 1)));
+
+    float u, v;
+    ray r;
+    vec3 color;
+    int index = 0;
+
+    for (size_t y = 0; y < height; y++) {
+        for (size_t x = 0; x < width; x++) {
+            color = vec3();
+            for (size_t sample_i = 0; sample_i < samples_per_thread; sample_i++) {
+                u = float(x + random_double()) / float(width);
+                v = float(height - (y + random_double())) / float(height);
+                r = cam.get_ray(u, v);
+                color += compute_color(r, world, 0);
+            }
+            color /= static_cast<float>(samples_per_thread);
+            color.output(result, &index);
+        }
     }
 }
 
 int main(int argc, char* argv[]) {
+    srand(static_cast<unsigned int>(time(nullptr)));
+
     constexpr int channels = 3;
     std::string filename = "output";
-    int width = 400; int height = 200, samples = 20;
     double fov = 20, aperture = 0.1, focus_dist = 10;
     vec3 cam_pos(13, 2, 3), look_at(0, 0, 0);
+    unsigned int max_threads = 0;
     for (size_t i = 0; i < argc; i++) {
         if (strcmp(argv[i], "-f") == 0)
-            filename = argv[i + 1];
+            filename = atoi(argv[i + 1]);
+
+        else if (strcmp(argv[i], "-t") == 0)
+            max_threads = atoi(argv[i + 1]);
 
         else if (strcmp(argv[i], "-w") == 0)
             width = atoi(argv[i + 1]);
@@ -110,7 +140,7 @@ int main(int argc, char* argv[]) {
             height = atoi(argv[i + 1]);
 
         else if (strcmp(argv[i], "-s") == 0)
-            samples = atoi(argv[i + 1]);
+            max_samples = atoi(argv[i + 1]);
         else if (strcmp(argv[i], "-b") == 0)
             max_bounces = atoi(argv[i + 1]);
 
@@ -128,48 +158,71 @@ int main(int argc, char* argv[]) {
             focus_dist = std::stof(argv[i + 1]);
     }
 
-    unsigned char* data = static_cast<unsigned char*>(malloc(static_cast<size_t>(width) * static_cast<size_t>(height) * static_cast<size_t>(channels)));
-    if (!data) {
-        std::cerr << "Failure to allocate on heap. Aborting." << std::endl;
-        return EXIT_FAILURE;
-    }
-    int index = 0;
-
-    std::cout << "Outputting to \"" << filename << ".png\" (" << width << "x" << height << ") at " << samples << " sppx." << std::endl
-              << max_bounces << " bounce(s) max." << std::endl;
-
-
-    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-
     float aspect_ratio = width / static_cast<float>(height);
-    float u, v;
-    ray r;
-    vec3 color;
-
     if (!focus_dist)
         focus_dist = (cam_pos - look_at).length();
     camera cam(cam_pos, look_at, vec3(0., 1., 0.), fov, aspect_ratio, aperture, focus_dist, 0, 1);
     auto world = random_scene();
 
+    unsigned int allocated_size = width * height * channels;
+    if (!max_threads)
+        max_threads = std::thread::hardware_concurrency();
+    if (max_samples < max_threads)
+        max_threads = max_samples;
 
-    for (size_t y = 0; y < height; y++) {
-        for (size_t x = 0; x < width; x++) {
-            color = vec3();
-            for (size_t sample_i = 0; sample_i < samples; sample_i++) {
-                u = float(x + random_double()) / float(width);
-                v = float(height - (y + random_double())) / float(height);
-                r = cam.get_ray(u, v);
-                color += compute_color(r, world, 0);
-            }
-            color /= static_cast<float>(samples);
-            color.output(data, &index);
+    std::vector<std::unique_ptr<std::thread>> threads_queue;
+    threads_queue.reserve(max_threads);
+    std::vector<unsigned char*> results;
+    results.reserve(max_threads);
+
+    
+    unsigned int samples_per_thread = max_samples / max_threads;
+    std::cout << "Outputting to \"" << filename << ".png\" (" << width << "x" << height << ") at " << samples_per_thread * max_threads << " sppx." << std::endl
+              << max_bounces << " bounce(s) max." << std::endl
+              << max_threads << " working thread(s) with " << samples_per_thread << " sample(s) per thread." << std::endl;
+
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+
+    std::unique_ptr<std::thread> buffer = nullptr;
+    for (size_t i = 0; i < max_threads; i++) {
+        // allocate mem for each thread
+        results.push_back(static_cast<unsigned char*>(malloc(allocated_size)));
+        if (!results[i]) {
+            std::cerr << "Failure to allocate on heap. Aborting." << std::endl;
+            return EXIT_FAILURE;
         }
+
+        buffer = std::make_unique<std::thread>(shoot_ray, results[i], i, samples_per_thread, cam, world);
+        threads_queue.push_back(move(buffer));
+    }
+
+    // waiting for ray gen to finish on all threads
+    for (size_t i = 0; i < max_threads; i++) {
+        threads_queue[i]->join();
+    }
+
+    // sum computation of each threads
+    unsigned char* data = static_cast<unsigned char*>(malloc(allocated_size));
+    if (!data) {
+        std::cerr << "Failure to allocate on heap. Aborting." << std::endl;
+        return EXIT_FAILURE;
+    }
+    int index = 0;
+    for (size_t i = 0; i < allocated_size; i++) {
+        unsigned int temp = 0;
+        for (size_t j = 0; j < max_threads; j++) {
+            temp += results[j][i];
+            //free(results[j]);
+        }
+
+        data[index++] = temp / max_threads;
     }
 
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::cout << std::endl << "Elapsed time: " << std::chrono::duration_cast<std::chrono::seconds> (end - begin).count() << "s." << std::endl;
 
     stbi_write_png(filename.append(".png").c_str(), width, height, channels, data, 0);
+    free(data);
 
     return EXIT_SUCCESS;
 }
