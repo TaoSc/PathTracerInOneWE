@@ -3,9 +3,9 @@
 #include <vector>
 #include <memory>
 
-#include "ray.h"
-#include "hittable.h"
-#include "aabb.h"
+#include "utilities/ray.h"
+#include "utilities/aabb.h"
+#include "hittables/hittable.h"
 
 using std::shared_ptr;
 

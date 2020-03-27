@@ -2,12 +2,12 @@
 
 #include <memory>
 
-#include "hittable.h"
-#include "vec3.h"
-#include "ray.h"
-#include "material.h"
-#include "aabb.h"
-#include "utility.h"
+#include "utilities/vec3.h"
+#include "utilities/ray.h"
+#include "utilities/utilities.h"
+#include "utilities/aabb.h"
+#include "hittables/hittable.h"
+#include "materials/material.h"
 
 class sphere : public hittable {
 public:

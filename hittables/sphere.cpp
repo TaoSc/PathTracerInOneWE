@@ -1,5 +1,10 @@
 #include "sphere.h"
 
+#include "utilities/ray.h"
+#include "utilities/vec3.h"
+#include "utilities/aabb.h"
+#include "hittables/hittable.h"
+
 bool sphere::hit(const ray& r, const float& t_min, const float& t_max, hit_record& rec) const {
     vec3 oc = r.origin() - center;
     auto a = r.direction().length_squared();

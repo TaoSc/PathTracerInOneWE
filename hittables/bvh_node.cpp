@@ -4,7 +4,12 @@
 #include <algorithm>
 #include <iostream>
 
-#include "random.h"
+#include "utilities/aabb.h"
+#include "utilities/random.h"
+#include "utilities/ray.h"
+#include "hittables/hittable.h"
+
+using std::shared_ptr;
 
 bool box_compare(const shared_ptr<hittable> a, const shared_ptr<hittable> b, int axis) {
     aabb box_a;

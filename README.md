@@ -4,7 +4,7 @@ My implementation of https://raytracing.github.io/books/RayTracingInOneWeekend.h
 
 Saves results in a png image file and has a lot of command-line options to tweak its output.
 
-Doesn't have any dependency and uses standard C++ code only, should easily compile on your platform of choice.
+Doesn't have any dependency and uses standard C++ code only, so it should easily compile on your platform of choice.
 
 ## Default Output
 ![Default Scene](https://github.com/TaoSc/PathTracerInOneWE/raw/master/output.png)

@@ -2,8 +2,8 @@
 
 #include <cstdlib>
 
-#include "utility.h"
-#include "vec3.h"
+#include "utilities/utilities.h"
+#include "utilities/vec3.h"
 
 inline int random_int() {
     return rand();

@@ -7,20 +7,22 @@
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image_write.h"
-#include "stb_image.h"
+#include "externals/stb_image_write.h"
+#include "externals/stb_image.h"
 
-#include "vec3.h"
-#include "random.h"
-#include "ray.h"
-#include "hittable.h"
-#include "hittable_list.h"
-#include "sphere.h"
 #include "camera.h"
-#include "material.h"
-#include "moving_sphere.h"
-#include "bvh_node.h"
-#include "texture.h"
+#include "utilities/vec3.h"
+#include "utilities/random.h"
+#include "utilities/ray.h"
+#include "hittables/hittable.h"
+#include "hittables/hittable_list.h"
+#include "hittables/sphere.h"
+#include "hittables/moving_sphere.h"
+#include "hittables/bvh_node.h"
+#include "materials/material.h"
+#include "materials/dielectric.h"
+#include "textures/texture.h"
+#include "textures/image_texture.h"
 
 
 constexpr float MAX_FLOAT = 100.f;

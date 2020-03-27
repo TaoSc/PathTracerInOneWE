@@ -18,66 +18,72 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sphere.cpp">
+    <ClCompile Include="hittables/sphere.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="hittable_list.cpp">
+    <ClCompile Include="hittables/hittable_list.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="material.cpp">
+    <ClCompile Include="materials/material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="moving_sphere.cpp">
+    <ClCompile Include="hittables/moving_sphere.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="bvh_node.cpp">
+    <ClCompile Include="hittables/bvh_node.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="vec3.h">
+    <ClInclude Include="utilities/vec3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ray.h">
+    <ClInclude Include="utilities/ray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="stb_image_write.h">
+    <ClInclude Include="externals/stb_image_write.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hittable.h">
+    <ClInclude Include="hittables/hittable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="sphere.h">
+    <ClInclude Include="hittables/sphere.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hittable_list.h">
+    <ClInclude Include="hittables/hittable_list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="random.h">
+    <ClInclude Include="utilities/random.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="material.h">
+    <ClInclude Include="materials/material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="utility.h">
+    <ClInclude Include="utilities/utilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="moving_sphere.h">
+    <ClInclude Include="hittables/moving_sphere.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="aabb.h">
+    <ClInclude Include="utilities/aabb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bvh_node.h">
+    <ClInclude Include="hittables/bvh_node.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="texture.h">
+    <ClInclude Include="textures/texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="stb_image.h">
+    <ClInclude Include="externals/stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="textures/image_texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="materials\dielectric.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

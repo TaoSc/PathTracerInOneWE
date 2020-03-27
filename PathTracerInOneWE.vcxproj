@@ -71,15 +71,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -138,29 +142,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="bvh_node.cpp" />
-    <ClCompile Include="hittable_list.cpp" />
+    <ClCompile Include="hittables/bvh_node.cpp" />
+    <ClCompile Include="hittables/hittable_list.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="material.cpp" />
-    <ClCompile Include="moving_sphere.cpp" />
-    <ClCompile Include="sphere.cpp" />
+    <ClCompile Include="materials/material.cpp" />
+    <ClCompile Include="hittables/moving_sphere.cpp" />
+    <ClCompile Include="hittables/sphere.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="aabb.h" />
-    <ClInclude Include="bvh_node.h" />
+    <ClInclude Include="textures/image_texture.h" />
+    <ClInclude Include="materials/dielectric.h" />
+    <ClInclude Include="utilities/aabb.h" />
+    <ClInclude Include="hittables/bvh_node.h" />
     <ClInclude Include="camera.h" />
-    <ClInclude Include="hittable.h" />
-    <ClInclude Include="hittable_list.h" />
-    <ClInclude Include="material.h" />
-    <ClInclude Include="moving_sphere.h" />
-    <ClInclude Include="random.h" />
-    <ClInclude Include="ray.h" />
-    <ClInclude Include="sphere.h" />
-    <ClInclude Include="stb_image.h" />
-    <ClInclude Include="stb_image_write.h" />
-    <ClInclude Include="texture.h" />
-    <ClInclude Include="utility.h" />
-    <ClInclude Include="vec3.h" />
+    <ClInclude Include="hittables/hittable.h" />
+    <ClInclude Include="hittables/hittable_list.h" />
+    <ClInclude Include="materials/material.h" />
+    <ClInclude Include="hittables/moving_sphere.h" />
+    <ClInclude Include="utilities/random.h" />
+    <ClInclude Include="utilities/ray.h" />
+    <ClInclude Include="hittables/sphere.h" />
+    <ClInclude Include="externals/stb_image.h" />
+    <ClInclude Include="externals/stb_image_write.h" />
+    <ClInclude Include="textures/texture.h" />
+    <ClInclude Include="utilities/utilities.h" />
+    <ClInclude Include="utilities/vec3.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

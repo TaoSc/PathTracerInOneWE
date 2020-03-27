@@ -2,8 +2,8 @@
 
 #include <memory>
 
-#include "ray.h"
-#include "aabb.h"
+#include "utilities/ray.h"
+#include "utilities/aabb.h"
 
 class material;
 

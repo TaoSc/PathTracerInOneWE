@@ -2,8 +2,8 @@
 
 #include <algorithm>
 
-#include "vec3.h"
-#include "ray.h"
+#include "utilities/vec3.h"
+#include "utilities/ray.h"
 
 class aabb {
 public:

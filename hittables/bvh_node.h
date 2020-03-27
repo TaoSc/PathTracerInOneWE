@@ -3,10 +3,10 @@
 #include <memory>
 #include <vector>
 
-#include "ray.h"
-#include "aabb.h"
-#include "hittable.h"
-#include "hittable_list.h"
+#include "utilities/ray.h"
+#include "utilities/aabb.h"
+#include "hittables/hittable.h"
+#include "hittables/hittable_list.h"
 
 class bvh_node : public hittable {
 public:

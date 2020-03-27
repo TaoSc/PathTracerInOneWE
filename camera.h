@@ -1,8 +1,8 @@
 #pragma once
 
-#include "utility.h"
-#include "ray.h"
-#include "random.h"
+#include "utilities/utilities.h"
+#include "utilities/ray.h"
+#include "utilities/random.h"
 
 class camera {
 public:
