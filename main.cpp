@@ -117,17 +117,26 @@ void shoot_ray(unsigned char* result, const size_t& thread_no, const size_t& sam
     }
 }
 
+void show_help() {
+    std::cout << "At one point this should be helpful.\nIn the meantime, the README will suffice." << std::endl;
+}
+
 int main(int argc, char* argv[]) {
     srand(static_cast<unsigned int>(time(nullptr)));
 
     constexpr int channels = 3;
     std::string filename = "output";
-    double fov = 20, aperture = 0.1, focus_dist = 10;
-    vec3 cam_pos(13, 2, 3), look_at(0, 0, 0);
+    double fov = 40, aperture = 0, focus_dist = 10;
+    vec3 cam_pos(278, 278, -800), look_at(278, 278, 0);
     unsigned int max_threads = 0;
     for (size_t i = 0; i < argc; i++) {
-        if (strcmp(argv[i], "-f") == 0)
-            filename = atoi(argv[i + 1]);
+        if (!strcmp(argv[i], "-help") || !strcmp(argv[i], "-h")) {
+            show_help();
+            goto program_end;
+        }
+
+        else if (strcmp(argv[i], "-f") == 0)
+            filename = argv[i + 1];
 
         else if (strcmp(argv[i], "-t") == 0)
             max_threads = atoi(argv[i + 1]);
@@ -156,71 +165,72 @@ int main(int argc, char* argv[]) {
             focus_dist = std::stof(argv[i + 1]);
     }
 
-    float aspect_ratio = width / static_cast<float>(height);
-    if (!focus_dist)
-        focus_dist = (cam_pos - look_at).length();
-    camera cam(cam_pos, look_at, vec3(0., 1., 0.), fov, aspect_ratio, aperture, focus_dist, 0, 1);
-    auto world = random_scene();
+    {
+        float aspect_ratio = width / static_cast<float>(height);
+        if (!focus_dist)
+            focus_dist = (cam_pos - look_at).length();
+        camera cam(cam_pos, look_at, vec3(0., 1., 0.), fov, aspect_ratio, aperture, focus_dist, 0, 1);
+        bvh_node world = cornell_box();
 
-    unsigned int allocated_size = width * height * channels;
-    if (!max_threads)
-        max_threads = std::thread::hardware_concurrency();
-    if (max_samples < max_threads)
-        max_threads = max_samples;
+        unsigned int allocated_size = width * height * channels;
+        if (!max_threads)
+            max_threads = std::thread::hardware_concurrency();
+        if (max_samples < max_threads)
+            max_threads = max_samples;
 
-    std::vector<std::unique_ptr<std::thread>> threads_queue;
-    threads_queue.reserve(max_threads);
-    std::vector<unsigned char*> results;
-    results.reserve(max_threads);
+        std::vector<std::unique_ptr<std::thread>> threads_queue;
+        threads_queue.reserve(max_threads);
+        std::vector<unsigned char*> results;
+        results.reserve(max_threads);
 
-    
-    unsigned int samples_per_thread = max_samples / max_threads;
-    std::cout << "Outputting to \"" << filename << ".png\" (" << width << "x" << height << ") at " << samples_per_thread * max_threads << " sppx." << std::endl
-              << max_bounces << " bounce(s) max." << std::endl
-              << max_threads << " working thread(s) with " << samples_per_thread << " sample(s) per thread." << std::endl;
 
-    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+        unsigned int samples_per_thread = max_samples / max_threads;
+        std::cout << "Outputting to \"" << filename << ".png\" (" << width << "x" << height << ") at " << samples_per_thread * max_threads << " sppx." << std::endl
+                  << max_bounces << " bounce(s) max." << std::endl
+                  << max_threads << " working thread(s) with " << samples_per_thread << " sample(s) per thread." << std::endl;
 
-    std::unique_ptr<std::thread> buffer = nullptr;
-    for (size_t i = 0; i < max_threads; i++) {
-        // allocate mem for each thread
-        results.push_back(static_cast<unsigned char*>(malloc(allocated_size)));
-        if (!results[i]) {
+        std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+
+        std::unique_ptr<std::thread> buffer = nullptr;
+        for (size_t i = 0; i < max_threads; i++) {
+            // allocate mem for each thread
+            results.push_back(static_cast<unsigned char*>(malloc(allocated_size)));
+            if (!results[i]) {
+                std::cerr << "Failure to allocate on heap. Aborting." << std::endl;
+                return EXIT_FAILURE;
+            }
+
+            buffer = std::make_unique<std::thread>(shoot_ray, results[i], i, samples_per_thread, cam, world);
+            threads_queue.push_back(move(buffer));
+        }
+
+        // waiting for ray gen to finish on all threads
+        for (size_t i = 0; i < max_threads; i++) {
+            threads_queue[i]->join();
+        }
+
+        // sum computation of each threads
+        unsigned char* data = static_cast<unsigned char*>(malloc(allocated_size));
+        if (!data) {
             std::cerr << "Failure to allocate on heap. Aborting." << std::endl;
             return EXIT_FAILURE;
         }
+        int index = 0;
+        for (size_t i = 0; i < allocated_size; i++) {
+            unsigned int temp = 0;
+            for (size_t j = 0; j < max_threads; j++)
+                temp += results[j][i];
 
-        buffer = std::make_unique<std::thread>(shoot_ray, results[i], i, samples_per_thread, cam, world);
-        threads_queue.push_back(move(buffer));
-    }
-
-    // waiting for ray gen to finish on all threads
-    for (size_t i = 0; i < max_threads; i++) {
-        threads_queue[i]->join();
-    }
-
-    // sum computation of each threads
-    unsigned char* data = static_cast<unsigned char*>(malloc(allocated_size));
-    if (!data) {
-        std::cerr << "Failure to allocate on heap. Aborting." << std::endl;
-        return EXIT_FAILURE;
-    }
-    int index = 0;
-    for (size_t i = 0; i < allocated_size; i++) {
-        unsigned int temp = 0;
-        for (size_t j = 0; j < max_threads; j++) {
-            temp += results[j][i];
-            //free(results[j]);
+            data[index++] = temp / max_threads;
         }
 
-        data[index++] = temp / max_threads;
+        std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+        std::cout << std::endl << "Elapsed time: " << std::chrono::duration_cast<std::chrono::seconds> (end - begin).count() << "s." << std::endl;
+
+        stbi_write_png(filename.append(".png").c_str(), width, height, channels, data, 0);
+        free(data);
     }
 
-    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-    std::cout << std::endl << "Elapsed time: " << std::chrono::duration_cast<std::chrono::seconds> (end - begin).count() << "s." << std::endl;
-
-    stbi_write_png(filename.append(".png").c_str(), width, height, channels, data, 0);
-    free(data);
-
+program_end:
     return EXIT_SUCCESS;
 }
