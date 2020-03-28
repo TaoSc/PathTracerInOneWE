@@ -52,9 +52,9 @@ class diffuse_light : public material {
 public:
     diffuse_light(std::shared_ptr<texture> a) : emit(a) {}
 
-    virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& attenuation, ray& scattered ) const { return false; }
+    virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& attenuation, ray& scattered ) const override { return false; }
 
-    virtual vec3 emitted(double u, double v, const vec3& p) const {
+    virtual vec3 emitted(double u, double v, const vec3& p) const override {
         return emit->value(u, v, p);
     }
 

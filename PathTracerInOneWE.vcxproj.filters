@@ -33,6 +33,12 @@
     <ClCompile Include="hittables/bvh_node.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="hittables\aa_rect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hittables\rotate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utilities/vec3.h">
@@ -83,7 +89,22 @@
     <ClInclude Include="textures/image_texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="materials\dielectric.h">
+    <ClInclude Include="materials/dielectric.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hittables\aa_rect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hittables\flip_face.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hittables\box.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hittables\translate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hittables\rotate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

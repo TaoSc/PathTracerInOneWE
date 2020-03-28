@@ -19,6 +19,11 @@
 #include "hittables/hittable_list.h"
 #include "hittables/sphere.h"
 #include "hittables/moving_sphere.h"
+#include "hittables/aa_rect.h"
+#include "hittables/box.h"
+#include "hittables/flip_face.h"
+#include "hittables/translate.h"
+#include "hittables/rotate.h"
 #include "hittables/bvh_node.h"
 #include "materials/material.h"
 #include "materials/dielectric.h"
@@ -28,7 +33,7 @@
 
 constexpr float MAX_DIST = 1000.f;
 unsigned int max_bounces = 5, max_samples = 20;
-unsigned int width = 400, height = 200;
+unsigned int width = 300, height = 300;
 
 using std::make_shared;
 
@@ -74,8 +79,34 @@ bvh_node random_scene() {
     return bvh_node(world, 0, 1);
 }
 
+bvh_node cornell_box() {
+    hittable_list objects;
 
-vec3 compute_color(const ray& r, const hittable& world, unsigned int bounces = 0) {
+    auto red = make_shared<lambertian>(make_shared<const_texture>(vec3(0.65, 0.05, 0.05)));
+    auto white = make_shared<lambertian>(make_shared<const_texture>(vec3(0.73, 0.73, 0.73)));
+    auto green = make_shared<lambertian>(make_shared<const_texture>(vec3(0.12, 0.45, 0.15)));
+    auto light = make_shared<diffuse_light>(make_shared<const_texture>(vec3(15)));
+
+    objects.add(make_shared<flip_face>(make_shared<yz_rect>(0, 555, 0, 555, 555, green)));
+    objects.add(make_shared<yz_rect>(0, 555, 0, 555, 0, red));
+    objects.add(make_shared<xz_rect>(213, 343, 227, 332, 554, light));
+    objects.add(make_shared<flip_face>(make_shared<xz_rect>(0, 555, 0, 555, 555, white)));
+    objects.add(make_shared<xz_rect>(0, 555, 0, 555, 0, white));
+    objects.add(make_shared<flip_face>(make_shared<xy_rect>(0, 555, 0, 555, 555, white)));
+
+    shared_ptr<hittable> box1 = make_shared<box>(vec3(0, 0, 0), vec3(165, 330, 165), white);
+    box1 = make_shared<rotate_y>(box1, 15);
+    box1 = make_shared<translate>(box1, vec3(265, 0, 295));
+    objects.add(box1);
+
+    shared_ptr<hittable> box2 = make_shared<box>(vec3(0, 0, 0), vec3(165, 165, 165), white);
+    box2 = make_shared<rotate_y>(box2, -18);
+    box2 = make_shared<translate>(box2, vec3(130, 0, 65));
+    objects.add(box2);
+
+    return bvh_node(objects, 0, 1);
+}
+
 vec3 compute_color(const ray& r, const vec3& background, const hittable& world, int bounces) {
     hit_record rec;
 
