@@ -26,7 +26,7 @@
 #include "textures/image_texture.h"
 
 
-constexpr float MAX_FLOAT = 100.f;
+constexpr float MAX_DIST = 1000.f;
 unsigned int max_bounces = 5, max_samples = 20;
 unsigned int width = 400, height = 200;
 
@@ -66,8 +66,9 @@ bvh_node random_scene() {
         }
     }
 
+    world.add(make_shared<xy_rect>(3, 5, 1, 3, -2, make_shared<diffuse_light>(make_shared<const_texture>(vec3(8)))));
     world.add(make_shared<sphere>(vec3(0, 1, 0), 1.0, make_shared<dielectric>(1.5)));
-    world.add(make_shared<sphere>(vec3(-4, 1, 0), 1.0, make_shared<lambertian>(make_shared<const_texture>(vec3(0.4, 0.2, 0.1)))));
+    world.add(make_shared<sphere>(vec3(-4, 1, 0), 1.0, make_shared<diffuse_light>(make_shared<const_texture>(vec3(7)))));
     world.add(make_shared<sphere>(vec3(4, 1, 0), 1.0, make_shared<metal>(texture, 0.3)));
 
     return bvh_node(world, 0, 1);
@@ -75,25 +76,22 @@ bvh_node random_scene() {
 
 
 vec3 compute_color(const ray& r, const hittable& world, unsigned int bounces = 0) {
+vec3 compute_color(const ray& r, const vec3& background, const hittable& world, int bounces) {
     hit_record rec;
 
-    // hit an object
-    if (world.hit(r, 0.001f, MAX_FLOAT, rec)) {
-        ray scattered;
-        vec3 attenuation;
-        if (bounces < max_bounces && rec.mat_ptr->scatter(r, rec, attenuation, scattered)) {
-            return attenuation * compute_color(scattered, world, ++bounces);
-        } else {
-            return vec3();
-        }
-    }
-    // sky
-    else {
-        vec3 unit_direction = unit_vector(r.direction());
-        double t = 0.5 * (unit_direction.y() + 1.0f);
-        return (1.0 - t) * vec3(1.0, 1.0, 1.0) + // white contribution
-                       t * vec3(0.5, 0.7, 1.0);  // blue contribution
-    }
+    if (bounces <= 0)
+        return vec3(0, 0, 0);
+
+    if (!world.hit(r, 0.001f, MAX_DIST, rec))
+        return background;
+
+    ray scattered;
+    vec3 attenuation;
+    vec3 emitted = rec.mat_ptr->emitted(rec.u, rec.v, rec.point);
+    if (!rec.mat_ptr->scatter(r, rec, attenuation, scattered))
+        return emitted;
+
+    return emitted + attenuation * compute_color(scattered, background, world, bounces - 1);
 }
 
 void shoot_ray(unsigned char* result, const size_t& thread_no, const size_t& samples_per_thread, const camera& cam, const bvh_node& world) {
@@ -102,7 +100,7 @@ void shoot_ray(unsigned char* result, const size_t& thread_no, const size_t& sam
     float u, v;
     ray r;
     vec3 color;
-    int index = 0;
+    size_t index = 0;
 
     for (size_t y = 0; y < height; y++) {
         for (size_t x = 0; x < width; x++) {
@@ -111,7 +109,7 @@ void shoot_ray(unsigned char* result, const size_t& thread_no, const size_t& sam
                 u = float(x + random_double()) / float(width);
                 v = float(height - (y + random_double())) / float(height);
                 r = cam.get_ray(u, v);
-                color += compute_color(r, world, 0);
+                color += compute_color(r, vec3(/*0.47, 0.29, 0.06*/), world, max_bounces);
             }
             color /= static_cast<float>(samples_per_thread);
             color.output(result, &index);
