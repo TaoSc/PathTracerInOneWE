@@ -12,19 +12,20 @@ rotate_y::rotate_y(std::shared_ptr<hittable> p, double angle) : ptr(p) {
     vec3 min(infinity, infinity, infinity);
     vec3 max(-infinity, -infinity, -infinity);
 
-    for (int i = 0; i < 2; i++) {
-        for (int j = 0; j < 2; j++) {
-            for (int k = 0; k < 2; k++) {
-                auto x = i * bbox.max().x() + (1 - i) * bbox.min().x();
-                auto y = j * bbox.max().y() + (1 - j) * bbox.min().y();
-                auto z = k * bbox.max().z() + (1 - k) * bbox.min().z();
+    for (unsigned int i = 0; i < 2; i++) {
+        for (unsigned int j = 0; j < 2; j++) {
+            for (unsigned int k = 0; k < 2; k++) {
+#pragma warning(disable : 26451)
+                double x = i * bbox.max().x() + (1 - i) * bbox.min().x();
+                double y = j * bbox.max().y() + (1 - j) * bbox.min().y();
+                double z = k * bbox.max().z() + (1 - k) * bbox.min().z();
 
-                auto newx = cos_theta * x + sin_theta * z;
-                auto newz = -sin_theta * x + cos_theta * z;
+                double newx = cos_theta * x + sin_theta * z;
+                double newz = -sin_theta * x + cos_theta * z;
 
                 vec3 tester(newx, y, newz);
 
-                for (int c = 0; c < 3; c++) {
+                for (size_t c = 0; c < 3; c++) {
                     min[c] = std::min(min[c], tester[c]);
                     max[c] = std::max(max[c], tester[c]);
                 }

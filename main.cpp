@@ -7,105 +7,22 @@
 #include <thread>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#define STB_IMAGE_IMPLEMENTATION
 #include "externals/stb_image_write.h"
-#include "externals/stb_image.h"
 
 #include "camera.h"
 #include "utilities/vec3.h"
 #include "utilities/random.h"
 #include "utilities/ray.h"
 #include "hittables/hittable.h"
-#include "hittables/hittable_list.h"
-#include "hittables/sphere.h"
-#include "hittables/moving_sphere.h"
-#include "hittables/aa_rect.h"
-#include "hittables/box.h"
-#include "hittables/flip_face.h"
-#include "hittables/translate.h"
-#include "hittables/rotate.h"
 #include "hittables/bvh_node.h"
-#include "materials/material.h"
-#include "materials/dielectric.h"
 #include "textures/texture.h"
-#include "textures/image_texture.h"
+#include "materials/material.h"
+#include "scenes/scene.h"
 
 
 constexpr float MAX_DIST = 1000.f;
 unsigned int max_bounces = 5, max_samples = 20;
 unsigned int width = 300, height = 300;
-
-using std::make_shared;
-
-bvh_node random_scene() {
-    hittable_list world;
-
-    int tex_width, tex_height, channels;
-    auto texture = make_shared<image_texture>(stbi_load("earthmap.jpg", &tex_width, &tex_height, &channels, 0), tex_width, tex_height);
-    auto checker = make_shared<checker_texture>(make_shared<const_texture>(vec3(0.2, 0.3, 0.1)), make_shared<const_texture>(vec3(0.9, 0.9, 0.9)), 300);
-    world.add(make_shared<sphere>(vec3(0, -1000, 0), 1000, make_shared<lambertian>(checker)));
-
-    for (int a = -11; a < 11; a++) {
-        for (int b = -11; b < 11; b++) {
-            auto choose_mat = random_double();
-            vec3 center(a + 0.9 * random_double(), 0.2, b + 0.9 * random_double());
-            if ((center - vec3(4, 0.2, 0)).length() > 0.9) {
-                if (choose_mat < 0.8) { // diffuse
-                    auto albedo = make_shared<const_texture>(vec3(random_double(), random_double(), random_double()) * vec3(random_double(), random_double(), random_double()));
-
-                    if (random_double() > 0.5) {
-                        world.add(make_shared<sphere>(center, 0.2, make_shared<lambertian>(albedo)));
-                    } else {
-                        world.add(make_shared<moving_sphere>(center, center + vec3(0, random_double(0, .5), 0), 0.0, 1.0, 0.2, make_shared<lambertian>(albedo)));
-                    }
-                }
-                else if (choose_mat < 0.95) { // metal
-                    auto albedo = make_shared<const_texture>(vec3(random_double(0.5, 1), random_double(0.5, 1), random_double(0.5, 1)));
-                    auto fuzz = random_double(0, .5);
-                    world.add(make_shared<sphere>(center, 0.2, make_shared<metal>(albedo, fuzz)));
-                }
-                else { // glass
-                    world.add(make_shared<sphere>(center, 0.2, make_shared<dielectric>(1.5)));
-                }
-            }
-        }
-    }
-
-    world.add(make_shared<xy_rect>(3, 5, 1, 3, -2, make_shared<diffuse_light>(make_shared<const_texture>(vec3(8)))));
-    world.add(make_shared<sphere>(vec3(0, 1, 0), 1.0, make_shared<dielectric>(1.5)));
-    world.add(make_shared<sphere>(vec3(-4, 1, 0), 1.0, make_shared<diffuse_light>(make_shared<const_texture>(vec3(7)))));
-    world.add(make_shared<sphere>(vec3(4, 1, 0), 1.0, make_shared<metal>(texture, 0.3)));
-
-    return bvh_node(world, 0, 1);
-}
-
-bvh_node cornell_box() {
-    hittable_list objects;
-
-    auto red = make_shared<lambertian>(make_shared<const_texture>(vec3(0.65, 0.05, 0.05)));
-    auto white = make_shared<lambertian>(make_shared<const_texture>(vec3(0.73, 0.73, 0.73)));
-    auto green = make_shared<lambertian>(make_shared<const_texture>(vec3(0.12, 0.45, 0.15)));
-    auto light = make_shared<diffuse_light>(make_shared<const_texture>(vec3(15)));
-
-    objects.add(make_shared<flip_face>(make_shared<yz_rect>(0, 555, 0, 555, 555, green)));
-    objects.add(make_shared<yz_rect>(0, 555, 0, 555, 0, red));
-    objects.add(make_shared<xz_rect>(213, 343, 227, 332, 554, light));
-    objects.add(make_shared<flip_face>(make_shared<xz_rect>(0, 555, 0, 555, 555, white)));
-    objects.add(make_shared<xz_rect>(0, 555, 0, 555, 0, white));
-    objects.add(make_shared<flip_face>(make_shared<xy_rect>(0, 555, 0, 555, 555, white)));
-
-    shared_ptr<hittable> box1 = make_shared<box>(vec3(0, 0, 0), vec3(165, 330, 165), white);
-    box1 = make_shared<rotate_y>(box1, 15);
-    box1 = make_shared<translate>(box1, vec3(265, 0, 295));
-    objects.add(box1);
-
-    shared_ptr<hittable> box2 = make_shared<box>(vec3(0, 0, 0), vec3(165, 165, 165), white);
-    box2 = make_shared<rotate_y>(box2, -18);
-    box2 = make_shared<translate>(box2, vec3(130, 0, 65));
-    objects.add(box2);
-
-    return bvh_node(objects, 0, 1);
-}
 
 vec3 compute_color(const ray& r, const vec3& background, const hittable& world, int bounces) {
     hit_record rec;
@@ -125,7 +42,7 @@ vec3 compute_color(const ray& r, const vec3& background, const hittable& world, 
     return emitted + attenuation * compute_color(scattered, background, world, bounces - 1);
 }
 
-void shoot_ray(unsigned char* result, const size_t& thread_no, const size_t& samples_per_thread, const camera& cam, const bvh_node& world) {
+void shoot_ray(unsigned char* result, const size_t& thread_no, const size_t& samples_per_thread, const camera& cam, const bvh_node& world, vec3 background) {
     srand(static_cast<unsigned int>(time(nullptr) * (thread_no + 1)));
 
     float u, v;
@@ -140,7 +57,7 @@ void shoot_ray(unsigned char* result, const size_t& thread_no, const size_t& sam
                 u = float(x + random_double()) / float(width);
                 v = float(height - (y + random_double())) / float(height);
                 r = cam.get_ray(u, v);
-                color += compute_color(r, vec3(/*0.47, 0.29, 0.06*/), world, max_bounces);
+                color += compute_color(r, background, world, max_bounces);
             }
             color /= static_cast<float>(samples_per_thread);
             color.output(result, &index);
@@ -157,11 +74,15 @@ int main(int argc, char* argv[]) {
 
     constexpr int channels = 3;
     std::string filename = "output";
-    double fov = 40, aperture = 0, focus_dist = 10;
-    vec3 cam_pos(278, 278, -800), look_at(278, 278, 0);
+
+    cornell_box cur_scene;
+    double fov = cur_scene.fov(), aperture = cur_scene.aperture(), focus_dist = cur_scene.focus_dist();
+    vec3 cam_pos = cur_scene.cam(), look_at = cur_scene.lookat();
+    vec3 background = cur_scene.background();
+
     unsigned int max_threads = 0;
     for (size_t i = 0; i < argc; i++) {
-        if (!strcmp(argv[i], "-help") || !strcmp(argv[i], "-h")) {
+        if (!strcmp(argv[i], "-help")) {
             show_help();
             goto program_end;
         }
@@ -201,7 +122,6 @@ int main(int argc, char* argv[]) {
         if (!focus_dist)
             focus_dist = (cam_pos - look_at).length();
         camera cam(cam_pos, look_at, vec3(0., 1., 0.), fov, aspect_ratio, aperture, focus_dist, 0, 1);
-        bvh_node world = cornell_box();
 
         unsigned int allocated_size = width * height * channels;
         if (!max_threads)
@@ -213,7 +133,7 @@ int main(int argc, char* argv[]) {
         threads_queue.reserve(max_threads);
         std::vector<unsigned char*> results;
         results.reserve(max_threads);
-
+        bvh_node world = cur_scene.descr();
 
         unsigned int samples_per_thread = max_samples / max_threads;
         std::cout << "Outputting to \"" << filename << ".png\" (" << width << "x" << height << ") at " << samples_per_thread * max_threads << " sppx." << std::endl
@@ -231,7 +151,7 @@ int main(int argc, char* argv[]) {
                 return EXIT_FAILURE;
             }
 
-            buffer = std::make_unique<std::thread>(shoot_ray, results[i], i, samples_per_thread, cam, world);
+            buffer = std::make_unique<std::thread>(shoot_ray, results[i], i, samples_per_thread, cam, world, background);
             threads_queue.push_back(move(buffer));
         }
 
