@@ -33,5 +33,6 @@ public:
         return true;
     }
 
+private:
     double ref_idx;
 };

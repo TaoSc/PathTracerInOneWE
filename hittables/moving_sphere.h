@@ -18,6 +18,7 @@ public:
     virtual bool bounding_box(const double& time0, const double& time1, aabb& output_box) const override;
     vec3 center(const double& time) const;
 
+private:
     vec3 center0, center1;
     double time0, time1;
     double radius;

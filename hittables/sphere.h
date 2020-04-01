@@ -17,6 +17,7 @@ public:
     virtual bool hit(const ray& r, const double& t_min, const double& t_max, hit_record& rec) const override;
     virtual bool bounding_box(const double& time0, const double& time1, aabb& output_box) const override;
 
+private:
     vec3 center;
     double radius;
     std::shared_ptr<material> mat_ptr;

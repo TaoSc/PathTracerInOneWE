@@ -32,6 +32,7 @@ public:
         return ray(origin + offset, lower_left_corner + s * horizontal + t * vertical - origin - offset, random_double(time0, time1));
     }
 
+private:
     vec3 origin;
     vec3 lower_left_corner;
     vec3 horizontal;

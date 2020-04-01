@@ -30,6 +30,7 @@ public:
         return true;
     }
 
+private:
     std::shared_ptr<texture> albedo;
 };
 
@@ -44,6 +45,7 @@ public:
         return (dot(scattered.direction(), rec.normal) > 0);
     }
 
+private:
     std::shared_ptr<texture> albedo;
     double fuzz;
 };
@@ -58,5 +60,6 @@ public:
         return emit->value(u, v, p);
     }
 
+private:
     std::shared_ptr<texture> emit;
 };

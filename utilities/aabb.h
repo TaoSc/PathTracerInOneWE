@@ -28,6 +28,7 @@ public:
         return true;
     }
 
+private:
     vec3 _min;
     vec3 _max;
 };

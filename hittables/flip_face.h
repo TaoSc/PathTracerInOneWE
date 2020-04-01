@@ -20,5 +20,6 @@ public:
         return hittable_ptr->bounding_box(time0, time1, output_box);
     }
 
+private:
     std::shared_ptr<hittable> hittable_ptr;
 };

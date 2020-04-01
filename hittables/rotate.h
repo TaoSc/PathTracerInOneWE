@@ -19,6 +19,7 @@ public:
         return has_box;
     }
 
+private:
     std::shared_ptr<hittable> ptr;
     double sin_theta;
     double cos_theta;

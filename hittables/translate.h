@@ -27,7 +27,7 @@ public:
         return true;
     }
 
-public:
+private:
     std::shared_ptr<hittable> hittable_ptr;
     vec3 offset;
 };

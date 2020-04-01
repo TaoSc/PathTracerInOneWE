@@ -32,6 +32,7 @@ public:
         return true;
     }
 
+private:
     vec3 box_min;
     vec3 box_max;
     hittable_list sides;

@@ -8,7 +8,7 @@
 class material;
 
 struct hit_record {
-    double time = 0.f;
+    double time = 0.;
     double u = 0., v = 0.;
     vec3 point;
     vec3 normal;

@@ -11,7 +11,7 @@ public:
     ~image_texture() { delete data; }
 
     virtual vec3 value(double u, double v, const vec3& p) const override {
-        if (data == nullptr) // If no data return bright red
+        if (data == nullptr) // If no data, return bright red
             return vec3(1, 0, 0);
 
 #pragma warning(disable : 26451)
@@ -29,6 +29,7 @@ public:
         return vec3(r, g, b);
     }
 
+private:
     unsigned char* data;
     int width, height;
 };

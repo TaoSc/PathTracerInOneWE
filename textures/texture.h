@@ -18,6 +18,7 @@ public:
         return color;
     }
 
+private:
     vec3 color;
 };
 
@@ -34,6 +35,7 @@ public:
             return even->value(u, v, p);
     }
 
+private:
     std::shared_ptr<texture> even;
     std::shared_ptr<texture> odd;
     double frequency;

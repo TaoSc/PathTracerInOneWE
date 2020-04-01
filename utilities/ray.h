@@ -13,6 +13,7 @@ public:
 
     vec3 at(double position) const { return orig + position * dir; }
 
+private:
     vec3 orig;
     vec3 dir;
     double tm;
