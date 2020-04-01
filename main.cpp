@@ -42,7 +42,7 @@ vec3 compute_color(const ray& r, const vec3& background, const hittable& world, 
     return emitted + attenuation * compute_color(scattered, background, world, bounces - 1);
 }
 
-void shoot_ray(unsigned char* result, const size_t& thread_no, const size_t& samples_per_thread, const camera& cam, const bvh_node& world, vec3 background) {
+void shoot_ray(unsigned char* result, const size_t& thread_no, const size_t& samples_per_thread, const camera& cam, const bvh_node& world, const vec3& background) {
     srand(static_cast<unsigned int>(time(nullptr) * (thread_no + 1)));
 
     float u, v;

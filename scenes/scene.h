@@ -5,7 +5,8 @@
 
 class scene {
 public:
-    scene(vec3 cam_pos, vec3 look, double field_of_view, double a, double dist, vec3 bg) : m_background(bg), m_cam_pos(cam_pos), m_lookat(look), m_fov(field_of_view), m_aperture(a), m_focus_dist(dist) {}
+    scene(const vec3& cam_pos, const vec3& look, double field_of_view, double a, double dist, const vec3& bg)
+        : m_background(bg), m_cam_pos(cam_pos), m_lookat(look), m_fov(field_of_view), m_aperture(a), m_focus_dist(dist) {}
 
     virtual bvh_node descr() const = 0;
     vec3 background() const { return m_background; }

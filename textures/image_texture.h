@@ -10,7 +10,7 @@ public:
 
     ~image_texture() { delete data; }
 
-    virtual vec3 value(double u, double v, const vec3& p) const override {
+    virtual vec3 value(const double&u, const double& v, const vec3& p) const override {
         if (data == nullptr) // If no data, return bright red
             return vec3(1, 0, 0);
 
