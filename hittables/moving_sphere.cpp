@@ -6,7 +6,7 @@
 #include "hittables/hittable.h"
 #include "hittables/sphere.h"
 
-bool moving_sphere::hit(const ray& r, const float& t_min, const float& t_max, hit_record& rec) const {
+bool moving_sphere::hit(const ray& r, const double& t_min, const double& t_max, hit_record& rec) const {
     vec3 oc = r.origin() - center(r.time());
     auto a = r.direction().length_squared();
     auto half_b = dot(oc, r.direction()); // half because the 2 will cancel out later
@@ -17,7 +17,7 @@ bool moving_sphere::hit(const ray& r, const float& t_min, const float& t_max, hi
         auto root = sqrt(discriminant);
         auto temp = (-half_b - root) / a; // *2 cancelled out
         if (temp < t_max && temp > t_min) {
-            rec.time = static_cast<float>(temp);
+            rec.time = temp;
             rec.point = r.at(rec.time);
             vec3 outward_normal = (rec.point - center(r.time())) / radius;
             rec.set_face_normal(r, outward_normal);
@@ -27,7 +27,7 @@ bool moving_sphere::hit(const ray& r, const float& t_min, const float& t_max, hi
         }
         temp = (-half_b + root) / a; // *2 cancelled out
         if (temp < t_max && temp > t_min) {
-            rec.time = static_cast<float>(temp);
+            rec.time = temp;
             rec.point = r.at(rec.time);
             vec3 outward_normal = (rec.point - center(r.time())) / radius;
             rec.set_face_normal(r, outward_normal);

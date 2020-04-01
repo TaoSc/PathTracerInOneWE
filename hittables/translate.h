@@ -10,7 +10,7 @@ class translate : public hittable {
 public:
     translate(std::shared_ptr<hittable> p, const vec3& displacement) : hittable_ptr(p), offset(displacement) {}
 
-    virtual bool hit(const ray& r, const float& t_min, const float& t_max, hit_record& rec) const override {
+    virtual bool hit(const ray& r, const double& t_min, const double& t_max, hit_record& rec) const override {
         ray offset_ray(r.origin() - offset, r.direction(), r.time());
         if (!hittable_ptr->hit(offset_ray, t_min, t_max, rec))
             return false;

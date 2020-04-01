@@ -8,7 +8,7 @@ class flip_face : public hittable {
 public:
     flip_face(std::shared_ptr<hittable> p) : hittable_ptr(p) {}
 
-    virtual bool hit(const ray& r, const float& t_min, const float& t_max, hit_record& rec) const override {
+    virtual bool hit(const ray& r, const double& t_min, const double& t_max, hit_record& rec) const override {
         if (!hittable_ptr->hit(r, t_min, t_max, rec))
             return false;
 

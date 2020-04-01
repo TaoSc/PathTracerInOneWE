@@ -5,7 +5,7 @@
 #include "utilities/aabb.h"
 #include "hittables/hittable.h"
 
-bool sphere::hit(const ray& r, const float& t_min, const float& t_max, hit_record& rec) const {
+bool sphere::hit(const ray& r, const double& t_min, const double& t_max, hit_record& rec) const {
     vec3 oc = r.origin() - center;
     auto a = r.direction().length_squared();
     auto half_b = dot(oc, r.direction()); // half because the 2 will cancel out later
@@ -16,7 +16,7 @@ bool sphere::hit(const ray& r, const float& t_min, const float& t_max, hit_recor
         auto root = sqrt(discriminant);
         auto temp = (-half_b - root) / a; // *2 cancelled out
         if (temp < t_max && temp > t_min) {
-            rec.time = static_cast<float>(temp);
+            rec.time = temp;
             rec.point = r.at(rec.time);
             vec3 outward_normal = (rec.point - center) / radius;
             rec.set_face_normal(r, outward_normal);
@@ -26,7 +26,7 @@ bool sphere::hit(const ray& r, const float& t_min, const float& t_max, hit_recor
         }
         temp = (-half_b + root) / a; // *2 cancelled out
         if (temp < t_max && temp > t_min) {
-            rec.time = static_cast<float>(temp);
+            rec.time = temp;
             rec.point = r.at(rec.time);
             vec3 outward_normal = (rec.point - center) / radius;
             rec.set_face_normal(r, outward_normal);

@@ -1,13 +1,13 @@
 #include "aa_rect.h"
 
 void set_rect_hit_record(hit_record& rec, const ray& r, const double& t, const std::shared_ptr<material>& mp, const vec3& out_norm) {
-    rec.time = static_cast<float>(t);
+    rec.time = t;
     rec.set_face_normal(r, out_norm);
     rec.mat_ptr = mp;
     rec.point = r.at(t);
 }
 
-bool xy_rect::hit(const ray& r, const float& t_min, const float& t_max, hit_record& rec) const {
+bool xy_rect::hit(const ray& r, const double& t_min, const double& t_max, hit_record& rec) const {
     double t = (z - r.origin().z()) / r.direction().z();
     if (t < t_min || t > t_max)
         return false;
@@ -23,7 +23,7 @@ bool xy_rect::hit(const ray& r, const float& t_min, const float& t_max, hit_reco
     return true;
 }
 
-bool xz_rect::hit(const ray& r, const float& t_min, const float& t_max, hit_record& rec) const {
+bool xz_rect::hit(const ray& r, const double& t_min, const double& t_max, hit_record& rec) const {
     double t = (y - r.origin().y()) / r.direction().y();
     if (t < t_min || t > t_max)
         return false;
@@ -39,7 +39,7 @@ bool xz_rect::hit(const ray& r, const float& t_min, const float& t_max, hit_reco
     return true;
 }
 
-bool yz_rect::hit(const ray& r, const float& t_min, const float& t_max, hit_record& rec) const {
+bool yz_rect::hit(const ray& r, const double& t_min, const double& t_max, hit_record& rec) const {
     double t = (x - r.origin().x()) / r.direction().x();
     if (t < t_min || t > t_max)
         return false;

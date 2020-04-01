@@ -14,7 +14,7 @@ public:
     moving_sphere(const vec3& cen0, const vec3& cen1, double t0, double t1, double r, std::shared_ptr<material> m)
         : center0(cen0), center1(cen1), time0(t0), time1(t1), radius(r), mat_ptr(m) {};
 
-    virtual bool hit(const ray& r, const float& t_min, const float& t_max, hit_record& rec) const override;
+    virtual bool hit(const ray& r, const double& t_min, const double& t_max, hit_record& rec) const override;
     virtual bool bounding_box(const double& time0, const double& time1, aabb& output_box) const override;
     vec3 center(const double& time) const;
 

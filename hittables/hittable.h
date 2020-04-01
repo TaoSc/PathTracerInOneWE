@@ -8,7 +8,7 @@
 class material;
 
 struct hit_record {
-    float time = 0.f;
+    double time = 0.f;
     double u = 0., v = 0.;
     vec3 point;
     vec3 normal;
@@ -23,6 +23,6 @@ struct hit_record {
 
 class hittable {
 public:
-    virtual bool hit(const ray& r, const float& t_min, const float& t_max, hit_record& rec) const = 0;
+    virtual bool hit(const ray& r, const double& t_min, const double& t_max, hit_record& rec) const = 0;
     virtual bool bounding_box(const double& time0, const double& time1, aabb& output_box) const = 0;
 };

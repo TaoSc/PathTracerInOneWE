@@ -36,7 +36,7 @@ rotate_y::rotate_y(std::shared_ptr<hittable> p, double angle) : ptr(p) {
     bbox = aabb(min, max);
 }
 
-bool rotate_y::hit(const ray& r, const float& t_min, const float& t_max, hit_record& rec) const {
+bool rotate_y::hit(const ray& r, const double& t_min, const double& t_max, hit_record& rec) const {
     vec3 origin = r.origin();
     vec3 direction = r.direction();
 

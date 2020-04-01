@@ -33,13 +33,16 @@
     <ClCompile Include="hittables/bvh_node.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="hittables\aa_rect.cpp">
+    <ClCompile Include="hittables/aa_rect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="hittables\rotate.cpp">
+    <ClCompile Include="hittables/rotate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="scenes\scene.cpp">
+    <ClCompile Include="scenes/scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hittables/constant_medium.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -95,22 +98,25 @@
     <ClInclude Include="materials/dielectric.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hittables\aa_rect.h">
+    <ClInclude Include="hittables/aa_rect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hittables\flip_face.h">
+    <ClInclude Include="hittables/flip_face.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hittables\box.h">
+    <ClInclude Include="hittables/box.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hittables\translate.h">
+    <ClInclude Include="hittables/translate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hittables\rotate.h">
+    <ClInclude Include="hittables/rotate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="scenes\scene.h">
+    <ClInclude Include="scenes/scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hittables/constant_medium.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

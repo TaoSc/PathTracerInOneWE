@@ -4,7 +4,7 @@
 #include "utilities/aabb.h"
 #include "hittables/hittable.h"
 
-bool hittable_list::hit(const ray& r, const float& t_min, const float& t_max, hit_record& rec) const {
+bool hittable_list::hit(const ray& r, const double& t_min, const double& t_max, hit_record& rec) const {
     hit_record temp_rec;
     bool hit_anything = false;
     float closest_so_far = t_max;

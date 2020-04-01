@@ -146,22 +146,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="hittables/constant_medium.cpp" />
     <ClCompile Include="hittables/bvh_node.cpp" />
     <ClCompile Include="hittables/hittable_list.cpp" />
-    <ClCompile Include="hittables\aa_rect.cpp" />
-    <ClCompile Include="hittables\rotate.cpp" />
+    <ClCompile Include="hittables/aa_rect.cpp" />
+    <ClCompile Include="hittables/rotate.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="materials/material.cpp" />
     <ClCompile Include="hittables/moving_sphere.cpp" />
     <ClCompile Include="hittables/sphere.cpp" />
-    <ClCompile Include="scenes\scene.cpp" />
+    <ClCompile Include="scenes/scene.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="hittables\box.h" />
-    <ClInclude Include="hittables\flip_face.h" />
-    <ClInclude Include="hittables\rotate.h" />
-    <ClInclude Include="hittables\translate.h" />
-    <ClInclude Include="scenes\scene.h" />
+    <ClInclude Include="hittables/constant_medium.h" />
+    <ClInclude Include="hittables/box.h" />
+    <ClInclude Include="hittables/flip_face.h" />
+    <ClInclude Include="hittables/rotate.h" />
+    <ClInclude Include="hittables/translate.h" />
+    <ClInclude Include="scenes/scene.h" />
     <ClInclude Include="textures/image_texture.h" />
     <ClInclude Include="materials/dielectric.h" />
     <ClInclude Include="utilities/aabb.h" />
@@ -179,7 +181,7 @@
     <ClInclude Include="textures/texture.h" />
     <ClInclude Include="utilities/utilities.h" />
     <ClInclude Include="utilities/vec3.h" />
-    <ClInclude Include="hittables\aa_rect.h" />
+    <ClInclude Include="hittables/aa_rect.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

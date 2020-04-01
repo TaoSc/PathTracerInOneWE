@@ -71,7 +71,7 @@ bvh_node::bvh_node(std::vector<shared_ptr<hittable>>& objects, size_t start, siz
     box = surrounding_box(box_left, box_right);
 }
 
-bool bvh_node::hit(const ray& r, const float& t_min, const float& t_max, hit_record& rec) const {
+bool bvh_node::hit(const ray& r, const double& t_min, const double& t_max, hit_record& rec) const {
     if (!box.hit(r, t_min, t_max))
         return false;
 
