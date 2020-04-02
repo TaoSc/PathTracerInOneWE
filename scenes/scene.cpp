@@ -11,6 +11,7 @@
 #include "hittables/moving_sphere.h"
 #include "hittables/aa_rect.h"
 #include "hittables/box.h"
+#include "hittables/constant_medium.h"
 #include "hittables/flip_face.h"
 #include "hittables/translate.h"
 #include "hittables/rotate.h"
@@ -82,12 +83,14 @@ bvh_node cornell_box::descr() const {
     shared_ptr<hittable> box1 = make_shared<box>(vec3(0, 0, 0), vec3(165, 330, 165), white);
     box1 = make_shared<rotate_y>(box1, 15);
     box1 = make_shared<translate>(box1, vec3(265, 0, 295));
-    objects.add(box1);
+    //objects.add(box1);
+    objects.add(make_shared<constant_medium>(box1, 0.01, make_shared<const_texture>(vec3(0))));
 
     shared_ptr<hittable> box2 = make_shared<box>(vec3(0, 0, 0), vec3(165, 165, 165), white);
     box2 = make_shared<rotate_y>(box2, -18);
     box2 = make_shared<translate>(box2, vec3(130, 0, 65));
-    objects.add(box2);
+    //objects.add(box2);
+    objects.add(make_shared<constant_medium>(box2, 0.01, make_shared<const_texture>(vec3(1))));
 
     return bvh_node(objects, 0, 1);
 }

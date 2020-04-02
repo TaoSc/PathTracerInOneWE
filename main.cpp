@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
     constexpr int channels = 3;
     std::string filename = "output";
 
-    cornell_box cur_scene;
+    perlin_scene cur_scene;
     double fov = cur_scene.fov(), aperture = cur_scene.aperture(), focus_dist = cur_scene.focus_dist();
     vec3 cam_pos = cur_scene.cam(), look_at = cur_scene.lookat();
     vec3 background = cur_scene.background();
