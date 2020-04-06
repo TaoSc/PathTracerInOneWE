@@ -21,7 +21,7 @@
 
 
 constexpr float MAX_DIST = 1000.f;
-unsigned int max_bounces = 5, max_samples = 20;
+unsigned int max_bounces = 3, max_samples = 20;
 unsigned int width = 300, height = 300;
 
 vec3 compute_color(const ray& r, const vec3& background, const hittable& world, int bounces) {
@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
     constexpr int channels = 3;
     std::string filename = "output";
 
-    perlin_scene cur_scene;
+    book2_scene cur_scene;
     double fov = cur_scene.fov(), aperture = cur_scene.aperture(), focus_dist = cur_scene.focus_dist();
     vec3 cam_pos = cur_scene.cam(), look_at = cur_scene.lookat();
     vec3 background = cur_scene.background();

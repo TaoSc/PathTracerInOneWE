@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "utilities/vec3.h"
+#include "utilities/perlin.h"
 
 class texture {
 public:
@@ -39,4 +40,18 @@ private:
     std::shared_ptr<texture> even;
     std::shared_ptr<texture> odd;
     double frequency;
+};
+
+class noise_texture : public texture {
+public:
+    noise_texture() : scale(1) {}
+    noise_texture(double sc) : scale(sc) {}
+
+    virtual vec3 value(const double& u, const double& v, const vec3& p) const override {
+        return vec3(1) * 0.5 * (1 + sin(scale * p.z() + 10 * noise.turb(p)));
+    }
+
+private:
+    double scale;
+    perlin noise;
 };

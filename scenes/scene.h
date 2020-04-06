@@ -45,3 +45,17 @@ public:
 
     virtual bvh_node descr() const override;
 };
+
+class book2_scene : public scene {
+public:
+    book2_scene() : scene(vec3(478, 278, -600), vec3(278, 278, 0), 40, 0, 10, vec3(0)) {}
+
+    virtual bvh_node descr() const override;
+};
+
+class perlin_scene : public scene {
+public:
+    perlin_scene() : scene(vec3(13, 2, 3), vec3(0), 20, 0, 10, vec3(0.5, 0.7, 1.0)) {}
+
+    virtual bvh_node descr() const override;
+};
