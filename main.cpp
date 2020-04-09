@@ -30,7 +30,7 @@ vec3 compute_color(const ray& r, const vec3& background, const hittable& world, 
     if (bounces <= 0)
         return vec3(0, 0, 0);
 
-    if (!world.hit(r, 0.001f, MAX_DIST, rec))
+    if (!world.hit(r, 0.001, MAX_DIST, rec))
         return background;
 
     ray scattered;

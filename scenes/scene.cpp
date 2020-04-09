@@ -167,7 +167,7 @@ bvh_node book2_scene::descr() const {
 bvh_node perlin_scene::descr() const {
     hittable_list objects;
 
-    auto pertext = make_shared<noise_texture>(0.4);
+    auto pertext = make_shared<noise_texture>(4);
     objects.add(make_shared<sphere>(vec3(0, -1000, 0), 1000, make_shared<lambertian>(pertext)));
     objects.add(make_shared<sphere>(vec3(0, 2, 0), 2, make_shared<lambertian>(pertext)));
 

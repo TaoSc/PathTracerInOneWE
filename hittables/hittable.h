@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "utilities/vec3.h"
 #include "utilities/ray.h"
 #include "utilities/aabb.h"
 
