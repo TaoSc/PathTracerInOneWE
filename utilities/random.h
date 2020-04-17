@@ -13,6 +13,7 @@ inline int random_int(int min, int max) {
     return (random_int() % (max + 1 - min)) + min;
 }
 
+// Returns a random double between 0 and 1
 inline double random_double() {
     return rand() / (RAND_MAX + 1.0);
 }
@@ -21,11 +22,12 @@ inline double random_double(double min, double max) {
     return min + (max - min) * random_double();
 }
 
+// Has a distribution of cos^3(theta)
 inline vec3 random_in_unit_sphere() {
     vec3 point;
     do {
         point = 2.0 * vec3(random_double(), random_double(), random_double()) - vec3(1., 1., 1.);
-    } while (point.length_squared() >= 1.0);
+    } while (point.length_squared() >= 1.0); // we don't need to compute the sqrt because sqrt(1)=1
     return point;
 }
 
@@ -37,6 +39,7 @@ inline vec3 random_in_unit_disk() {
     return point;
 }
 
+// Has a distribution of cos(theta)
 inline vec3 random_unit_vector() {
     double a = random_double(0, 2. * PI);
     double z = random_double(-1, 1);

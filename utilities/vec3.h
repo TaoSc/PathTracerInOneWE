@@ -40,8 +40,9 @@ public:
         return sqrt(length_squared());
     }
 
+    // dot product of the vector by itself
     double length_squared() const {
-        return e[0] * e[0] + e[1] * e[1] + e[2] * e[2]; // dot squared
+        return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
     }
 
     template <typename T> void output(T* data, size_t* index) {

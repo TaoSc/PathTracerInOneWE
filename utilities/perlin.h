@@ -81,7 +81,7 @@ private:
     }
 
     static void permute(int* p, int n) {
-        for (int i = n - 1; i > 0; i--) { // should it be n or (n - 1)?
+        for (int i = n; i > 0; i--) { // should it be n or (n - 1)?
             int target = random_int(0, i);
             int tmp = p[i];
             p[i] = p[target];

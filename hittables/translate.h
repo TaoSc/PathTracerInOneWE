@@ -22,7 +22,7 @@ public:
     virtual bool bounding_box(const double& time0, const double& time1, aabb& output_box) const override {
         if (!hittable_ptr->bounding_box(time0, time1, output_box))
             return false;
-        
+
         output_box = aabb(output_box.min() + offset, output_box.max() + offset);
         return true;
     }
