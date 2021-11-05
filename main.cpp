@@ -2,9 +2,9 @@
 #include <fstream>
 #include <chrono>
 #include <string>
-#include <cstdlib>
 #include <memory>
 #include <thread>
+#include <cstdlib>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "externals/stb_image_write.h"
@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
     constexpr int channels = 3;
     std::string filename = "output";
 
-    book2_scene cur_scene;
+    random_scene cur_scene;
     double fov = cur_scene.fov(), aperture = cur_scene.aperture(), focus_dist = cur_scene.focus_dist();
     vec3 cam_pos = cur_scene.cam(), look_at = cur_scene.lookat();
     vec3 background = cur_scene.background();
@@ -129,39 +129,29 @@ int main(int argc, char* argv[]) {
         if (max_samples < max_threads)
             max_threads = max_samples;
 
-        std::vector<std::unique_ptr<std::thread>> threads_queue;
+        std::vector<std::thread> threads_queue;
         threads_queue.reserve(max_threads);
-        std::vector<unsigned char*> results;
-        results.reserve(max_threads);
+        unsigned char* results = new unsigned char[max_threads * allocated_size];
         bvh_node world = cur_scene.descr();
 
         unsigned int samples_per_thread = max_samples / max_threads;
-        std::cout << "Outputting to \"" << filename << ".png\" (" << width << "x" << height << ") at " << samples_per_thread * max_threads << " sppx." << std::endl
-                  << max_bounces << " bounce(s) max." << std::endl
+        std::cout << "Outputting to \"" << filename << ".png\" (" << width << "x" << height << ") at " << samples_per_thread * max_threads << " sppx.\n"
+                  << max_bounces << " bounce(s) max.\n"
                   << max_threads << " working thread(s) with " << samples_per_thread << " sample(s) per thread." << std::endl;
 
         std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
-        std::unique_ptr<std::thread> buffer = nullptr;
         for (size_t i = 0; i < max_threads; i++) {
-            // allocate mem for each thread
-            results.push_back(static_cast<unsigned char*>(malloc(allocated_size)));
-            if (!results[i]) {
-                std::cerr << "Failure to allocate on heap. Aborting." << std::endl;
-                return EXIT_FAILURE;
-            }
-
-            buffer = std::make_unique<std::thread>(shoot_ray, results[i], i, samples_per_thread, cam, world, background);
-            threads_queue.push_back(move(buffer));
+            threads_queue.emplace_back(shoot_ray, &results[i * allocated_size], std::ref(i), std::ref(samples_per_thread), std::ref(cam), std::ref(world), std::ref(background));
         }
 
         // waiting for ray gen to finish on all threads
-        for (size_t i = 0; i < max_threads; i++) {
-            threads_queue[i]->join();
+        for (auto& t : threads_queue) {
+            t.join();
         }
 
-        // sum computation of each threads
-        unsigned char* data = static_cast<unsigned char*>(malloc(allocated_size));
+        // sum computation of each threads !!FIXME!!: Use mutexes instead
+        unsigned char* data = new unsigned char[allocated_size];
         if (!data) {
             std::cerr << "Failure to allocate on heap. Aborting." << std::endl;
             return EXIT_FAILURE;
@@ -170,16 +160,17 @@ int main(int argc, char* argv[]) {
         for (size_t i = 0; i < allocated_size; i++) {
             unsigned int temp = 0;
             for (size_t j = 0; j < max_threads; j++)
-                temp += results[j][i];
+                temp += results[j * allocated_size + i];
 
             data[index++] = temp / max_threads;
         }
+        delete[] results;
 
         std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-        std::cout << std::endl << "Elapsed time: " << std::chrono::duration_cast<std::chrono::seconds> (end - begin).count() << "s." << std::endl;
+        std::cout << "\nElapsed time: " << std::chrono::duration_cast<std::chrono::seconds> (end - begin).count() << "s." << std::endl;
 
         stbi_write_png(filename.append(".png").c_str(), width, height, channels, data, 0);
-        free(data);
+        delete[] data;
     }
 
 program_end:
